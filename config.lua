@@ -22,7 +22,7 @@ kAlert.config.recources = { kAlertTexts.resHealth,
                             kAlertTexts.resCharge,
                             kAlertTexts.resComboPoints,
                             kAlertTexts.resPlanar,
-                            kAlertTexts.resFuryCunning }
+                            kAlertTexts.resFocus }
 kAlert.config.units = {kAlertTexts.unitPlayer,kAlertTexts.unitTarget,kAlertTexts.unitFocus,kAlertTexts.unitPet}
 kAlert.config.evaluationTypes = {kAlertTexts.buff,kAlertTexts.ability,kAlertTexts.resource,kAlertTexts.casting}
 
