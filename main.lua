@@ -410,6 +410,26 @@ function kAlert.initializationHandler(handle)
 	kUtils.runTasks()
 end
 
+function kAlert.checkFocusChange()
+	local focusChanged = false
+	local focusTable = {}
+	for unitId, _ in pairs(kAlert.unitIds) do
+		-- TODO: Optimize this to be more performant
+		-- Inspecting units like this constantly is likely expensive, benchmark!
+		local focus = Inspect.Unit.Detail(unitId).focus
+		-- TODO: 8 is a brittle magic number.  Think about refactoring these out to refer to resource type.
+		if focus ~= kAlert.cache.resources[unitId][8] then
+			focusChanged = true
+		end
+		focusTable[unitId] = focus
+	end
+
+	if focusChanged then
+		-- Return correct format that resource change expects - table of units/values
+		kAlert.changeHandler.resFocusChanged("focusChanged", focusTable)
+	end
+end
+
 function kAlert.eventHandler(handle)
 	kUtils.queueTask(function()
 		local scanTime = Inspect.Time.Frame()
@@ -418,6 +438,10 @@ function kAlert.eventHandler(handle)
 
 			-- We need to poll for changes to unit relation, because there is currently no event for this
 			kAlert.cache.unitState:updateNeutralUnits()
+
+			-- Need to poll to update focus since there is no event for this
+			-- Event.Unit.Detail.Focus is not implemented in the API...
+			kAlert.checkFocusChange()
 
 			if not kAlert.config.active then
 				for id, details in pairs(kAlert.screenObjects.object) do
@@ -954,7 +978,7 @@ function kAlert.screenObjects:refresh()
 		-- Maintain some utility tables to see which events we're interested in.
 		self.buffList = {}
 		self.buffUnits = {}
-		self.resourceList = { false, false, false, false, false, false, false }
+		self.resourceList = { false, false, false, false, false, false, false, false }
 
 		for id, details in pairs(kAlert.alertSet.alerts) do
 			self.add(details)
@@ -1096,7 +1120,9 @@ local function updateUnitResources(unitId)
 		if unitResources.planar then
 			resourceList[7] = {unitResources.planar, unitResources.planarMax}
 		end
-
+		if unitResources.focus then
+			resourceList[8] = {unitResources.focus, unitResources.focus}
+		end
 	end
 	kAlert.cache.resources[unitId] = resourceList
 end
@@ -1447,6 +1473,10 @@ end
 
 function kAlert.changeHandler.resPlanarChanged(handle, units)
 	kAlert.changeHandler.resChanged(units, 7)
+end
+
+function kAlert.changeHandler.resFocusChanged(handle, units)
+	kAlert.changeHandler.resChanged(units, 8)
 end
 
 function kAlert.processResources()
