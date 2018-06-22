@@ -106,7 +106,7 @@ if ( private.kAlertTexts == nil ) then
 		["resCharge"] = "Charge",
 		["resComboPoints"] = "Combo Points",
 		["resPlanar"] = "Planar Charges",
-        ["resFocus"] = "Focus (0 = Fury, 100 = Harmony, 200 = Cunning)",
+        ["resFocus"] = "Focus",
 		["abtTitle"] = "Karuul's Alerting System\nBy: Karuul, Thorarin",
 		["lbVersion"] = "Version:",
 		["abtInfo"] = "Special Thanks:\nWoW Power Auras crew - Without their amazing addon this would not even have been a thought. Also for allowing use of their sample images.\n\nC\195\169res guilde BloodLust Brisesol - For providing the French translations for the addon and general help and suggestions along the way.\n\nValixx - For providing the German translations.\n\nZveryga, Grey Guard guild - for Russian translation.\n\nNaifu, creator of nkRogue - Who gave me a glimpse of what was possible and inspired me to dive into addon development.\n\nSafe - For creating Safe's Raid Manager as well as the wonderful King Boss Mods.\n\nImhothar - For creating LibString.\n\nZorbaTHut - For being around to answer questions even over the weekends.",
