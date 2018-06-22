@@ -15,7 +15,7 @@ local function subscribeResourceEvents(resourceList)
 	kUtils.attachEventEx(Event.Unit.Detail.Charge, kAlert.changeHandler.resChargeChanged, "chargeChanged", resourceList[5])
 	kUtils.attachEventEx(Event.Unit.Detail.Combo, kAlert.changeHandler.resComboChanged, "comboChanged", resourceList[6])
 	kUtils.attachEventEx(Event.Unit.Detail.Planar, kAlert.changeHandler.resPlanarChanged, "planarChanged", resourceList[7])
-	
+
 	kUtils.attachEventEx(Event.Unit.Detail.HealthMax, kAlert.changeHandler.resMaxChanged, "maxChanged", resourceList[1])
 	kUtils.attachEventEx(Event.Unit.Detail.ManaMax, kAlert.changeHandler.resMaxChanged, "maxChanged", resourceList[2])
 	kUtils.attachEventEx(Event.Unit.Detail.EnergyMax, kAlert.changeHandler.resMaxChanged, "maxChanged", resourceList[3])
@@ -51,7 +51,7 @@ end
 
 function kAlert.cache.unitState:updateUnits(unitsToUpdate)
 	local relationChanges = false
-	
+
 	for key, value in pairs(unitsToUpdate) do
 		local unit
 		if string.sub(key, 1, 1) ~= "u" then
@@ -59,13 +59,13 @@ function kAlert.cache.unitState:updateUnits(unitsToUpdate)
 		else
 			unit = key
 		end
-		
+
 		local unitDetail = Inspect.Unit.Detail(unit)
 		if unitDetail ~= nil then
 			local oldState = self[unit]
 			local relation = kAlert.unitRelation[unitDetail.relation] or 0
 			local live = (unitDetail.health and unitDetail.health > 0)
-			
+
 			if oldState == nil then
 				self[unit] = {relation = relation, live = live}
 				relationChanges = true
@@ -87,12 +87,12 @@ function kAlert.cache.unitState:updateUnits(unitsToUpdate)
 			self[unit] = nil
 		end
 	end
-	
+
 	if relationChanges then
 		kAlert.changeHandler.buffChanged = true
 		kAlert.changeHandler.resourceChanged = true
-		kAlert.changeHandler.castingChanged = true					
-	end	
+		kAlert.changeHandler.castingChanged = true
+	end
 end
 
 function kAlert.cache.unitState:updateNeutralUnits()
@@ -103,7 +103,7 @@ function kAlert.cache.unitState:updateNeutralUnits()
 			neutralUnits[unitId] = unitId
 		end
 	end
-	
+
 	if neutralUnits then
 		self:updateUnits(neutralUnits)
 	end
@@ -120,27 +120,27 @@ function kAlert.cache.buffs:addBuff(unitId, details)
 		buffEntry = {expires = details.begin + details.duration, stacks = details.stack or 1, caster = details.caster}
 		durationRounded = tostring(math.floor(details.duration + 0.5))
 	end
-	
+
 	local names = {}
 	names[details.name] = true
 	names[details.name .. durationRounded] = true
 	if details.caster == kAlert.unitSpecs.player then
 		names[details.name .. "S"] = true
 		names[details.name .. durationRounded .. "S"] = true
-	end			
-	
+	end
+
 	cache.byId[details.id] = { names = names, entry = buffEntry }
 	for name, _ in pairs(names) do
 		cache.byName[name] = buffEntry
 	end
-	
+
 	kAlert.changeHandler.buffChanged = true
 end
 
 function kAlert.cache.buffs:updateBuff(unitId, details)
 	local buffById = self[unitId].byId[details.id]
 	if buffById == nil then	return false end
-	
+
 	local buffEntry = buffById.entry
 	-- Note that updating duration is currently not supported
 	buffEntry.expires = details.remaining and (details.begin + details.duration) or 0
@@ -152,11 +152,11 @@ end
 function kAlert.cache.buffs:initializeUnitTask(unitId)
 	local buffs = Inspect.Buff.List(unitId)
 	if buffs == nil then return end
-	
+
 	for buffId, _ in pairs(buffs) do
 		-- Handle case where the unit is removed from the cache before this task is finished executing
 		if self[unitId] == nil then return end
-		
+
 		local buffDetail = Inspect.Buff.Detail(unitId, buffId)
 		if buffDetail ~= nil then
 			updateBuffInGlobalItems(buffDetail)
@@ -169,7 +169,7 @@ function kAlert.cache.buffs:initializeUnitTask(unitId)
 end
 
 function kAlert.cache.buffs:initializeUnit(unitId)
-	self[unitId] = 
+	self[unitId] =
 	{
 		byId = {},
 		byName = {}
@@ -193,7 +193,7 @@ local function registerUnitChange(unitSpec, func, addonIdentifier, text)
 	local function handler(unitId)
 		func(unitSpec, unitId)
 	end
-	
+
 	kUtils.subscribeEvent(eventTable, handler, addonIdentifier, text)
 end
 
@@ -206,13 +206,13 @@ end
 
 function kAlert.main()
 	Command.Event.Attach(Event.Addon.SavedVariables.Load.End, kAlert.settingsHandler, "variablesLoaded")
-	
+
 	Command.Event.Attach(Event.Unit.Availability.Full, kAlert.playerAvailableHandler, "playerAvailable")
-	
+
 	Command.Event.Attach(Event.Unit.Availability.None, kAlert.changeHandler.unitAvailabilityNone, "availabilityNone")
 	Command.Event.Attach(Event.Unit.Availability.Partial, kAlert.changeHandler.unitAvailabilityPartial, "availabilityPartial")
 	Command.Event.Attach(Event.Unit.Availability.Full, kAlert.changeHandler.unitAvailabilityFull, "availabilityFull")
-	
+
 	Command.Event.Attach(Event.Unit.Detail.Name, kAlert.changeHandler.unitName, "unitName")
 
 	table.insert(Command.Slash.Register("KAlert"), {kAlert.commandHandler, "kAlert", "config"})
@@ -222,7 +222,7 @@ function kAlert.main()
 	Command.Event.Attach(Event.System.Secure.Leave, kAlert.changeHandler.secureLeave, "exitCombat")
 
 	Command.Event.Attach(Event.Unit.Castbar, kAlert.changeHandler.checkCasting, "castDetected")
-	
+
 	if Event.TEMPORARY and Event.TEMPORARY.Role then
 		Command.Event.Attach(Event.TEMPORARY.Role, kAlert.changeHandler.roleChanged, "roleChanged")
 	end
@@ -256,7 +256,7 @@ function kAlert.effectiveUnit(alert)
 			return nil
 		end
 	end
-	
+
 	if alert.type == 1 and not kAlert.cache.unitState[unitId].live then
 		return nil
 	else
@@ -265,7 +265,7 @@ function kAlert.effectiveUnit(alert)
 end
 
 function kAlert.commandHandler(commandline)
-	
+
 	if string.len(commandline) == 0 then
 		kAlert.screenObjects.hide()
 		kAlert.config.main()
@@ -315,21 +315,21 @@ function kAlert.commandHandler(commandline)
 					kAlert.processBuffs = perf.hook(kAlert.processBuffs, "kAlert.processBuffs")
 					kAlert.processCasting = perf.hook(kAlert.processCasting, "kAlert.processCasting")
 					kAlert.processResources = perf.hook(kAlert.processResources, "kAlert.processResources")
-					
+
 					kAlert.changeHandler.resHealthChanged =  perf.hook(kAlert.changeHandler.resHealthChanged, "kAlert.changeHandler.resHealthChanged")
 					kAlert.changeHandler.resManaChanged =  perf.hook(kAlert.changeHandler.resManaChanged, "kAlert.changeHandler.resManaChanged")
 					kAlert.changeHandler.resEnergyChanged =  perf.hook(kAlert.changeHandler.resEnergyChanged, "kAlert.changeHandler.resEnergyChanged")
 					kAlert.changeHandler.resPowerChanged =  perf.hook(kAlert.changeHandler.resPowerChanged, "kAlert.changeHandler.resPowerChanged")
 					kAlert.changeHandler.resChargeChanged =  perf.hook(kAlert.changeHandler.resChargeChanged, "kAlert.changeHandler.resChargeChanged")
 					kAlert.changeHandler.resComboChanged =  perf.hook(kAlert.changeHandler.resComboChanged, "kAlert.changeHandler.resComboChanged")
-					
+
 					kAlert.changeHandler.buffsAdded = perf.hook(kAlert.changeHandler.buffsAdded, "kAlert.changeHandler.buffsAdded")
 					kAlert.changeHandler.buffsRemoved = perf.hook(kAlert.changeHandler.buffsRemoved, "kAlert.changeHandler.buffsRemoved")
 					kAlert.changeHandler.buffsChanged = perf.hook(kAlert.changeHandler.buffsChanged, "kAlert.changeHandler.buffsChanged")
-					
+
 					Command.Event.Detach(Event.System.Update.Begin, nil, "eventHandler", nil, addonInfo.identifier)
 					Command.Event.Attach(Event.System.Update.Begin, perf.hook(kAlert.eventHandler, "kAlert.eventHandler"), "eventHandler")
-					
+
 					subscribeResourceEvents(kAlert.screenObjects.resourceList)
 					subscribeAbilityEvents(true)
 					subscribeBuffEvents(true)
@@ -353,41 +353,41 @@ function kAlert.commandHandler(commandline)
 			print("tutorial - to restart the tutorial for new users")
 		end
 	end
-	
+
 end
 
 function kAlert.settingsHandler(handle, identifier)
 	if identifier ~= "kAlert" then return end
-	
+
 	local tutorial = false
 
 	if kAlertVersion == nil then
 		kAlertVersion = 1.00
 	end
-	
+
 	if kAlertGlobalVersion == nil then
 		kAlertGlobalVersion = 1.00
 	end
-	
+
 	if kAlertSet == nil then
 		kAlertSet = 1
 	elseif kAlertSet == "auto" and (Inspect.TEMPORARY == nil or Inspect.TEMPORARY.Role == nil) then
 		kAlertSet = 1
 	end
-	
+
 	if kAlertSubSet == nil then
 		kAlertSubSet = 0
 	end
-	
+
 	if kAlertAlerts == nil then
 		kAlertAlerts = {}
 		tutorial = true
 	end
-	
+
 	if kAlertGlobalItems == nil then
 		kAlertGlobalItems = {}
 	end
-	
+
 	if kAlertGlobalSettings == nil then
 		kAlertGlobalSettings =
 		{
@@ -400,7 +400,7 @@ function kAlert.settingsHandler(handle, identifier)
 			kAlertGlobalSettings.textTextEffects = kAlertGlobalSettings.counterTextEffects
 		end
 	end
-	
+
 	if tutorial then
 		kAlert.gettingStarted(true)
 	end
@@ -418,7 +418,7 @@ function kAlert.eventHandler(handle)
 
 			-- We need to poll for changes to unit relation, because there is currently no event for this
 			kAlert.cache.unitState:updateNeutralUnits()
-	
+
 			if not kAlert.config.active then
 				for id, details in pairs(kAlert.screenObjects.object) do
 					if details.timerEnd > 0 then
@@ -450,11 +450,11 @@ function kAlert.eventHandler(handle)
 			end
 		end
 	end, kAlert.debug and kAlert.profiling, "eventHandler")
-	
+
 	if not kAlert.combat and table.getn(kAlert.sharedAlerts) > 0 then
 		kAlert.config.sharedAlert()
 	end
-	
+
 	kUtils.runTasks()
 end
 
@@ -571,12 +571,12 @@ local function updateAlert(details, fromVersion)
 	if details.rangeLow == nil then details.rangeLow = 0 end
 	if details.rangeHigh == nil then details.rangeHigh = 0 end
 	if details.unitRelation == nil then details.unitRelation = 0 end
-	
+
 	if details.unit == "player.target.target" then
 		-- Bug in 1.30.x inadvertently converted focus alerts to target of target
 		details.unit = "focus"
 	end
-	
+
 	if (details.type == 1 or details.type == 2) and details.itemId then
 		details.itemId = kAlert.convertAbilityId(details.itemId)
 	elseif details.type == 2 and details.itemId == nil then
@@ -594,12 +594,12 @@ function kAlert.updateAlerts(fromVersion)
 	if kUtils.compareVersions(fromVersion, "1.37.1") >= 0 then
 		local updatedSets = { sets = {}, subSets = {} }
 		local tempSets = {}
-	
+
 		for id, details in pairs(kAlertAlerts) do
 			updateAlert(details, fromVersion)
 			id = details.name
 			local index = details.set
-			
+
 			if tempSets[index] == nil then
 				if index <= 6 then
 					tempSets[index] = private.AlertSet.Create(updatedSets.sets, index)
@@ -607,31 +607,31 @@ function kAlert.updateAlerts(fromVersion)
 					tempSets[index] = private.AlertSet.Create(updatedSets.subSets, index - 6)
 				end
 			end
-			
+
 			local result = tempSets[index]:Add(details)
-			
+
 			kUtils.taskYield("updateAlerts - " .. id)
 		end
-		
+
 		for _, set in pairs(tempSets) do
 			set:Save()
 		end
-		
+
 		kAlertAlerts = updatedSets
 	else
 		local function updateSet(set)
 			for id, alertData in pairs(set.alerts) do
 				updateAlert(alertData, fromVersion)
-				
+
 				-- Delete any alerts that do not pass basic validation
 				if not validateAlert(alertData) then
 					print(string.format(kAlertTexts.msgInvalidAlertDeleted, alertData.name))
 					set.alerts[id] = nil
 				end
-				
+
 				kUtils.taskYield("updateAlerts - " .. id)
 			end
-		end		
+		end
 		for _, set in pairs(kAlertAlerts.sets) do updateSet(set) end
 		for _, set in pairs(kAlertAlerts.subSets) do updateSet(set) end
 	end
@@ -649,10 +649,10 @@ function kAlert.updateGlobalItems()
 			if details.ability then
 				details.ability = kAlert.convertAbilityId(details.ability)
 			end
-			
+
 			kUtils.taskYield()
 		end
-	end, false, "updateGlobalItems")	
+	end, false, "updateGlobalItems")
 end
 
 function kAlert.screenObjects.init()
@@ -660,27 +660,27 @@ function kAlert.screenObjects.init()
 
 	Command.Event.Attach(Event.System.Update.Begin, kAlert.initializationHandler, "eventHandler")
 	kAlert.screenObjects.object = {}
-	
+
 	kUtils.queueTask(function()
 		if kUtils.compareVersions(kAlertVersion, kAlert.version) > 0 then
 			print("v" .. tostring(kAlertVersion) .. " -> v" .. tostring(kAlert.version))
 		end
-		
+
 		print("v" .. tostring(kAlert.version))
-		
+
 		kAlert.updateGlobalItems(kAlertGlobalVersion)
 		kAlertGlobalVersion = kAlert.version
-		
+
 		kAlert.updateAlerts(kAlertVersion)
 		kAlertVersion = kAlert.version
-		
+
 		kAlert.alertSet = private.AlertSet.Create(kAlertAlerts.sets)
 		kAlert.alertSet:Load(kAlert.effectiveAlertSet())
 
 		kAlert.alertSubSet = private.AlertSet.Create(kAlertAlerts.subSets)
 		kAlert.alertSubSet:Load(kAlertSubSet)
 		kAlert.screenObjects:refresh()
-		
+
 		Command.Event.Detach(Event.System.Update.Begin, nil, "eventHandler", nil, addonInfo.identifier)
 		Command.Event.Attach(Event.System.Update.Begin, kAlert.eventHandler, "eventHandler")
 	end)
@@ -720,11 +720,11 @@ function kAlert.screenObjects.addObject(id)
 	object.combatOnly = nil
 	object.timerEnd = 0
 	object.selfCast = false
-		
+
 	object.image = UI.CreateFrame("Texture", "objectIcon" .. iID, object)
 	object.image:SetPoint("CENTER", object, "CENTER", 0, 2)
 	object.image:SetLayer(0)
-	
+
 	object.text = kUtils.createExtText("objectText" .. iID, object)
 	object.text:SetShadow(kAlertGlobalSettings.counterTextEffects)
 	object.text:SetText('')
@@ -732,32 +732,32 @@ function kAlert.screenObjects.addObject(id)
 	object.text:SetFontColor(1, 1, 1, 1)
 	object.text:SetLayer(1)
 	object.text:SetPoint("CENTER", object.image, "CENTER")
-	
+
 	kUtils.taskYield()
 	object.counter = kUtils.createExtText("objectDuration" .. iID, object)
 	object.counter:SetShadow(kAlertGlobalSettings.counterTextEffects)
-	
+
 	object.counter:SetText('')
-	object.counter:SetFontSize(object:GetWidth()/2)	
+	object.counter:SetFontSize(object:GetWidth()/2)
 	object.counter:SetFontColor(1, 1, 1, 1)
 	object.counter:SetLayer(3)
 	object.counter:SetPoint("CENTER", object.image, "CENTER")
 	object.counter:SetVisible(false)
-	
+
 	-- Previous value of timer, to prevent redundant SetText calls
 	local timerValue = -1
-	
+
 	function object.setDims(width, height)
 		object:SetWidth(width)
 		object:SetHeight(height)
 		object.image:SetWidth(width)
 		object.image:SetHeight(height)
 	end
-	
+
 	function object.setTimer(value)
 		if value == timerValue then	return end
 		timerValue = value
-		
+
 		-- Marksman Bull's Eye ability reports a really long cooldown before a DPS skill is used. It looks silly.
 		if value >= 0 and value < 100000 then
 			object.counter:SetText(tostring(math.floor(value)))
@@ -765,13 +765,13 @@ function kAlert.screenObjects.addObject(id)
 			object.counter:SetText("")
 		end
 	end
-	
+
 	function object.setText(value)
 		object.text:SetText(value)
 	end
-	
+
 	return object
-	
+
 end
 
 function kAlert.screenObjects.clear()
@@ -796,7 +796,7 @@ function kAlert.screenObjects.clear()
 		object.setTimer(-1)
 		object.dynamicText = nil
 		object.setText("")
-		object.selfCast = false	
+		object.selfCast = false
 	end
 
 	kAlert.cache.abilities = {}
@@ -831,15 +831,15 @@ end
 
 function kAlert.screenObjects.add(alert)
 	if not alert.active then return end
-	
+
 	kAlert.screenObjects.objectCount = kAlert.screenObjects.objectCount + 1
 	local i = kAlert.screenObjects.objectCount
 	if i > table.getn(kAlert.screenObjects.object) then
 		kAlert.screenObjects.object[i] = kAlert.screenObjects.addObject(i)
 		kUtils.taskYield()
-	end		
+	end
 	local screenObject = kAlert.screenObjects.object[i]
-	
+
 	-- Copy Data
 	screenObject.name = alert.name
 	screenObject:SetLayer(alert.layer)
@@ -853,7 +853,7 @@ function kAlert.screenObjects.add(alert)
 	screenObject.itemLength = alert.itemLength
 	screenObject.selfCast = alert.selfCast
 	screenObject.itemName = alert.itemName
-	
+
 	if alert.type == 1 then
 		screenObject.itemName = string.split(alert.itemName, ",")
 
@@ -890,13 +890,13 @@ function kAlert.screenObjects.add(alert)
 	elseif alert.type == 4 then
 		screenObject.interruptibleCast = alert.interruptibleCast
 	end
-	
+
 	screenObject.itemId = alert.itemId
 	screenObject.itemValue = alert.itemValue
 	screenObject.itemValuePercent = alert.itemValuePercent
 	screenObject.combatOnly = alert.combatOnly
 	screenObject.timerLength = alert.timerLength
-	
+
 	-- Image
 	kUtils.taskYield("screenObjects.add - image texture")
 	screenObject.setDims(alert.imageWidth,alert.imageHeight)
@@ -904,7 +904,7 @@ function kAlert.screenObjects.add(alert)
 	kUtils.taskYield("screenObjects.add - image alpha")
 	screenObject.image:SetAlpha(alert.imageOpacity)
 	screenObject:SetPoint("TOPLEFT", kAlert.context, "TOPLEFT", alert.imageX, alert.imageY)
-	
+
 	-- Text
 	if string.find(alert.text, "{") then
 		screenObject.dynamicText = alert.text
@@ -912,7 +912,7 @@ function kAlert.screenObjects.add(alert)
 	else
 		screenObject.text:SetText(alert.text)
 	end
-	
+
 	screenObject.text:ClearAll()
 	screenObject.text:SetFontColor(alert.textRed,alert.textGreen,alert.textBlue)
 	screenObject.text:SetAlpha(alert.textOpacity)
@@ -924,7 +924,7 @@ function kAlert.screenObjects.add(alert)
 	screenObject.text:SetFontSize(alert.textSize)
 	screenObject.text:SetHeight(alert.textSize + 5)
 	positionScreenObjectText(screenObject.text, screenObject.image, alert.textLocation, alert.textInside)
-	
+
 	-- Timer
 	screenObject.timer = alert.timer
 	screenObject.counter:SetVisible(alert.timer)
@@ -939,33 +939,33 @@ function kAlert.screenObjects.add(alert)
 	screenObject.counter:SetFontColor(alert.textRed,alert.textGreen,alert.textBlue)
 	screenObject.counter:SetAlpha(alert.textOpacity)
 	positionScreenObjectText(screenObject.counter, screenObject.image, alert.timerLocation, alert.timerInside)
-	
+
 	screenObject:SetVisible(false)
 end
 
 function kAlert.screenObjects:refresh()
-	
-	kUtils.queueTask(function()	
+
+	kUtils.queueTask(function()
 		self.objectCount = 0
 		self.clear()
-	
+
 		kAlert.systemScanner.scanAbilities()
 
 		-- Maintain some utility tables to see which events we're interested in.
 		self.buffList = {}
 		self.buffUnits = {}
 		self.resourceList = { false, false, false, false, false, false, false }
-		
+
 		for id, details in pairs(kAlert.alertSet.alerts) do
 			self.add(details)
 		end
 		kUtils.taskYield("refresh - addSet")
-		
+
 		for id, details in pairs(kAlert.alertSubSet.alerts) do
 			self.add(details)
 		end
 		kUtils.taskYield("refresh - addSubSet")
-		
+
 		-- Create list of units that we need to monitor buffs for, as well
 		-- as a list of resources we're interested in monitoring.
 		for id, details in pairs(self.object) do
@@ -980,18 +980,18 @@ function kAlert.screenObjects:refresh()
 		if kAlert.useTargetOfTarget and self.buffUnits["player.target"] then
 			self.buffUnits["player.target.target"] = true
 		end
-		
+
 		for unitSpec, _ in pairs(self.buffUnits) do
 			local unitId = Inspect.Unit.Lookup(unitSpec)
-			if unitId then 
+			if unitId then
 				kAlert.cache.buffs:initializeUnit(unitId)
 			end
 		end
-		
+
 		subscribeResourceEvents(self.resourceList)
 		subscribeAbilityEvents(true)
 		subscribeBuffEvents(true)
-		
+
 		kAlert.processBuffs()
 		kUtils.taskYield("refresh - processBuffs")
 		kAlert.processAbilities()
@@ -1015,21 +1015,21 @@ function kAlert.changeHandler.roleChanged(handle, role)
 	-- This event seems to occur before Event.Unit.Availability.Full for "player",
 	-- in which case we need to do some initialization.
 	kAlert.screenObjects.init()
-	
+
 	if kAlert.rolesMax < role then
 		kAlert.rolesMax = role
 	end
 
 	kUtils.queueTask(function()
 		kAlert.alertSet:Load(kAlert.effectiveAlertSet(role))
-		kAlert.screenObjects:refresh()	
+		kAlert.screenObjects:refresh()
 		kAlert.printActiveSets()
 	end)
 end
 
 function kAlert.changeHandler.checkCasting(handle, units)
 	if kAlert.config.active or kAlert.changeHandler.castingChanged then return end
-	
+
 	for id, details in pairs(units) do
 		if kAlert.unitIds[id] then
 			kAlert.changeHandler.castingChanged = true
@@ -1050,7 +1050,7 @@ function kAlert.processCasting()
 			end
 		end
 	end
-	
+
 	for id, details in pairs(kAlert.screenObjects.object) do
 		if details.type == 4 then -- Casting
 			local showObject = false
@@ -1096,7 +1096,7 @@ local function updateUnitResources(unitId)
 		if unitResources.planar then
 			resourceList[7] = {unitResources.planar, unitResources.planarMax}
 		end
-		
+
 	end
 	kAlert.cache.resources[unitId] = resourceList
 end
@@ -1112,7 +1112,7 @@ end
 
 function kAlert.changeHandler.secureLeave(handle)
 	kAlert.combat = false
-	
+
 	kAlert.changeHandler.buffChanged = true
 	kAlert.changeHandler.abilityChanged = true
 	kAlert.changeHandler.resourceChanged = true
@@ -1131,7 +1131,7 @@ function kAlert.changeHandler.unitChange(unitSpec, unitId)
 			kAlert.cache.removeUnit(oldId)
 		end
 	end
-	
+
 	if unitId then
 		if kAlert.unitIds[unitId] == nil then
 			kAlert.unitIds[unitId] = { [unitSpec] = true }
@@ -1148,7 +1148,7 @@ function kAlert.changeHandler.unitChange(unitSpec, unitId)
 		kAlert.cache.buffs:initializeUnit(unitId)
 	end
 	kAlert.cache.unitState:updateUnits({[unitSpec] = unitId})
-	
+
 	-- Force alert updates
 	kAlert.changeHandler.buffChanged = true
 	kAlert.changeHandler.resourceChanged = true
@@ -1172,7 +1172,7 @@ end
 
 function kAlert.changeHandler.buffsAdded(handle, unit, buffs)
 	if not kAlert.cache.buffs[unit] then return end
-	
+
 	local buffDetails = Inspect.Buff.Detail(unit, buffs)
 	for id, details in pairs(buffDetails) do
 		updateBuffInGlobalItems(details)
@@ -1181,17 +1181,17 @@ function kAlert.changeHandler.buffsAdded(handle, unit, buffs)
 		if kAlert.screenObjects.buffList[details.name] then
 			kAlert.cache.buffs:addBuff(unit, details)
 		end
-	end	
+	end
 
 	kAlert.changeHandler.buffChanged = true
 end
 
 function kAlert.changeHandler.buffsRemoved(handle, unit, buffs)
 	if not kAlert.cache.buffs[unit] then return end
-		
+
 	local cache = kAlert.cache.buffs[unit]
 	local keysToRemove = {}
-	
+
 	for id, _ in pairs(buffs) do
 		if cache.byId[id] == nil then
 			-- This is normally okay, because we only put buffs in there that we're interested in
@@ -1199,9 +1199,9 @@ function kAlert.changeHandler.buffsRemoved(handle, unit, buffs)
 		else
 			local buffById = cache.byId[id]
 			local buffEntry = buffById.entry
-			
+
 			cache.byId[id] = nil
-			
+
 			for key, _ in pairs(buffById.names) do
 				if cache.byName[key] == buffEntry then
 					table.insert(keysToRemove, key)
@@ -1209,12 +1209,12 @@ function kAlert.changeHandler.buffsRemoved(handle, unit, buffs)
 			end
 		end
 	end
-	
+
 	-- Remove the keys marked for deletion
 	for _, key in ipairs(keysToRemove) do
 		cache.byName[key] = nil
 	end
-			
+
 	-- Attempt to readd the removed keys based on active buffs.
 	-- I think this may only be needed in edge cases, since the longest lasting buff should already be in the cache.
 	-- If there are multiple buffs with the same name but different duration, or
@@ -1230,13 +1230,13 @@ function kAlert.changeHandler.buffsRemoved(handle, unit, buffs)
 			end
 		end
 	end
-	
+
 	kAlert.changeHandler.buffChanged = true
 end
 
 function kAlert.changeHandler.buffsChanged(handle, unit, buffs)
 	if not kAlert.cache.buffs[unit] then return end
-	
+
 	local buffDetails = Inspect.Buff.Detail(unit, buffs)
 	for id, details in pairs(buffDetails) do
 		if kAlert.cache.buffs:updateBuff(unit, details) then
@@ -1266,7 +1266,7 @@ local function updateScreenObjectText(obj, buffDetails)
 			else
 				return ""
 			end
-			
+
 		end
 	end)
 
@@ -1275,13 +1275,13 @@ end
 
 function kAlert.processBuffs()
 	local scanTime = Inspect.Time.Frame()
-	
+
 	for id, details in pairs(kAlert.screenObjects.object) do
 		if details.type == 1 then -- Buff
 			local showObject = false
 			local timerValue = -1
 			details.timerEnd = 0
-			
+
 			if not details.combatOnly or kAlert.combat then
 				local unit = kAlert.effectiveUnit(details)
 
@@ -1292,8 +1292,8 @@ function kAlert.processBuffs()
 						buffDetails = cachedBuffs[itemName]
 						if buffDetails then break end
 					end
-					
-					updateScreenObjectText(details, buffDetails)					
+
+					updateScreenObjectText(details, buffDetails)
 
 					local timeLeft = details.timerLength
 					if buffDetails ~= nil and buffDetails.stacks >= details.itemValue then
@@ -1308,12 +1308,12 @@ function kAlert.processBuffs()
 					end
 				end
 			end
-			
+
 			details.setTimer(timerValue)
 			details:SetVisible(showObject and not kAlert.config.active)
 		end
 	end
-	
+
 	kAlert.changeHandler.buffChanged = false
 end
 
@@ -1358,7 +1358,7 @@ function kAlert.processAbilities()
 	for id, details in pairs(kAlert.screenObjects.object) do
 		if details.type == 2 then -- Ability
 			local showObject = false
-			local timerValue = -1			
+			local timerValue = -1
 			details.timerEnd = 0
 			if not details.combatOnly or kAlert.combat then
 				local abilityDetails = kAlert.cache.abilities[details.itemId]
@@ -1386,7 +1386,7 @@ function kAlert.processAbilities()
 			kUtils.taskYield()
 		end
 	end
-	
+
 	kAlert.changeHandler.abilityChanged = false
 end
 
@@ -1451,15 +1451,15 @@ end
 
 function kAlert.processResources()
 	if kAlert.config.active then return end
-	
+
 	local cache = kAlert.cache.resources
-	
+
 	for id, details in pairs(kAlert.screenObjects.object) do
 		if details.type == 3 then -- Resource
 			local showObject = false
 			if kAlert.combat or not details.combatOnly then
 				local unit = kAlert.effectiveUnit(details)
-				
+
 				if unit ~= nil and cache[unit] ~= nil then
 					if cache[unit][details.itemId] ~= nil then
 						local checkValue
@@ -1480,7 +1480,7 @@ function kAlert.processResources()
 			details:SetVisible(showObject and not kAlert.config.active)
 		end
 	end
-	
+
 	kAlert.changeHandler.resourceChanged = false
 
 end
@@ -1499,28 +1499,28 @@ end
 function kAlert.playerAvailableHandler(handle, units)
 	if not kUtils.tableContainsValue(units, "player") then return end
 	Command.Event.Detach(Event.Unit.Availability.Full, nil, "playerAvailable", nil, addonInfo.identifier)
-	
+
 	-- Initialize unit ID and specifier mappings
 	if kUtils.tableIsEmpty(kAlert.unitIds) then
 		local lookupTable = {}
 		for _, spec in pairs(kAlert.units) do
 			lookupTable[spec] = true
 		end
-		
+
 		kAlert.initializeUnitLookupTables(lookupTable)
 
 		for spec, id in pairs(kAlert.unitSpecs) do
 			updateUnitResources(id)
 		end
 	end
-	
+
 	kAlert.cache.unitState:updateUnits(kAlert.unitSpecs)
-	
+
 	for _, spec in ipairs(kAlert.units) do
 		registerUnitChange(spec, kAlert.changeHandler.unitChange, "kAlert", spec)
 	end
-	
-	-- Detect the number of roles for this character (Rift 2.3)	
+
+	-- Detect the number of roles for this character (Rift 2.3)
 	if Inspect.Role and Inspect.Role.List then
 		kAlert.rolesMax = 0
 		for _, role in pairs(Inspect.Role.List()) do
@@ -1529,7 +1529,7 @@ function kAlert.playerAvailableHandler(handle, units)
 		-- Workaround for what seems to be a bug in the Rift API (Rift 2.3 hotfix 5)
 		if kAlert.rolesMax == 0 then kAlert.rolesMax = 1 end
 	end
-	
+
 	kAlert.screenObjects.init()
 end
 
@@ -1539,7 +1539,7 @@ function kAlert.systemScanner.start()
 	local lookupTable = {}
 	for _, spec in pairs(kAlert.units) do
 		lookupTable[spec] = true
-	end	
+	end
 	for i = 1, 20 do
 		local spec = string.format("group%02d", i)
 		lookupTable[spec] = true
@@ -1547,9 +1547,9 @@ function kAlert.systemScanner.start()
 		registerUnitChange(spec, kAlert.changeHandler.unitChange, "kAlert", spec)
 		registerUnitChange(spec .. ".target", kAlert.changeHandler.unitChange, "kAlert", spec .. ".target")
 	end
-	
+
 	kAlert.initializeUnitLookupTables(lookupTable)
-	
+
 	for unitId, _ in pairs(kAlert.unitIds) do
 		if kAlert.cache.buffs[unitId] == nil then
 			if kAlert.cache.buffs[unitId] == nil then
@@ -1558,7 +1558,7 @@ function kAlert.systemScanner.start()
 			end
 		end
 	end
-	
+
 	kAlert.systemScanner.activeScanning = true
 	Command.Event.Attach(Event.Ability.New.Add, kAlert.systemScanner.abilitiesAdded, "systemScanner")
 	kAlert.systemScanner.scanAbilities()
@@ -1566,9 +1566,9 @@ end
 
 function kAlert.systemScanner.stop()
 	if not kAlert.systemScanner.activeScanning then return end
-	
+
 	kAlert.systemScanner.activeScanning = false
-	
+
 	local function removeUnit(spec)
 		unregisterUnitChange(spec, "kAlert", spec)
 		local unitId = kAlert.unitSpecs[spec]
@@ -1582,13 +1582,13 @@ function kAlert.systemScanner.stop()
 			end
 		end
 	end
-	
+
 	for i = 1, 20 do
 		local spec = string.format("group%02d", i)
 		removeUnit(spec)
 		removeUnit(spec .. ".target")
 	end
-	
+
 	Command.Event.Detach(Event.Ability.New.Add, nil, "systemScanner", nil, addonInfo.identifier)
 end
 
@@ -1654,5 +1654,3 @@ end
 
 
 kAlert.main()
-
-
