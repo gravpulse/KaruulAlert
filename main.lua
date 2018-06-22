@@ -416,12 +416,15 @@ function kAlert.checkFocusChange()
 	for unitId, _ in pairs(kAlert.unitIds) do
 		-- TODO: Optimize this to be more performant
 		-- Inspecting units like this constantly is likely expensive, benchmark!
-		local focus = Inspect.Unit.Detail(unitId).focus
-		-- TODO: 8 is a brittle magic number.  Think about refactoring these out to refer to resource type.
-		if focus ~= kAlert.cache.resources[unitId][8] then
-			focusChanged = true
+		local unit = Inspect.Unit.Detail(unitId)
+		if unit ~= nil then
+			local focus = unit.focus
+			-- TODO: 8 is a brittle magic number.  Think about refactoring these out to refer to resource type.
+			if focus ~= kAlert.cache.resources[unitId][8] then
+				focusChanged = true
+			end
+			focusTable[unitId] = focus
 		end
-		focusTable[unitId] = focus
 	end
 
 	if focusChanged then
