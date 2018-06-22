@@ -1,0 +1,14 @@
+tag 1.0.1
+5062f859d8a0843bda4e47acd2a8acc8c04d24cf
+imhothar <none>
+2012-07-24 07:39:49 +0200
+
+Tagging as 1.0.1
+
+
+--------------------
+
+imhothar:
+	- Pushed version to 1.0.1 and environment to 1.9
+	- Removed reference to global "unpacked" in string.split
+	- Added email and website to .toc file

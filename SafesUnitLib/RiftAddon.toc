@@ -1,0 +1,30 @@
+﻿Identifier = "SafesUnitLib"
+
+Name = "Safe's Unit Library"
+NameShort = "LibSUnit"
+
+Description = "Dynamic safe removal Table library."
+
+Author = "Paul Snart"
+Website = "http://twitter.com/#!/psnart"
+Email = "snarty@gmail.com"
+
+Version = "0.2.4"
+
+Environment = "2.2"
+
+RunOnStartup = {
+	"LibSUnit.lua",
+}
+
+Embed = {
+	LibUnitChange = true,
+}
+
+SavedVariables = {
+	SafesUnitLib_Settings = "account",
+}
+
+Dependencies = {
+	LibUnitChange = {"required", "before"},
+}

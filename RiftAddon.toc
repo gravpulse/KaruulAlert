@@ -1,0 +1,55 @@
+Identifier = "kAlert"
+Name = "Karuul's Alerting System"
+Description = "Customizable alerting system for tracking buffs, abilities and much more..."
+
+Author = "Karuul, Thorarin"
+Website = ""
+Email = "karuulalert@rift-voice.org"
+
+Version = "1.39.2"
+xVersionStable = "1.39.2"
+Environment = "2.3"
+
+RunOnStartup = {
+  "languages\\localizationDE.lua",
+  "languages\\localizationFR.lua",
+  "languages\\localizationRU.lua",
+  "languages\\localizationEN.lua",
+  "help\\helpRU.lua",
+  "help\\helpEN.lua",
+  "alertset.lua",
+  "init.lua",
+  "utilities.lua",
+  "main.lua",
+  "importexport.lua",
+  "config.lua",
+  "validation.lua",
+  "tasks.lua",
+  "messaging.lua",
+  "gettingstarted.lua"
+}
+
+SavedVariables = {
+  kAlertVersion = "character",
+  kAlertGlobalVersion = "global",
+  kAlertAlerts = "character",
+  kAlertSet = "character",
+  kAlertSubSet = "character",
+  kAlertGlobalItems = "global",
+  kAlertGlobalSettings = "global"
+}
+
+Embed = {
+	["SafesUnitLib"] = true,
+	["LibString"] = true,
+	["UIX"] = true
+}
+
+Dependencies = {
+	SafesUnitLib = {"required", "before"},
+	LibUnitChange = {"required", "before"},
+	LibString = {"required", "before"},
+	UIX = {"required", "before"},
+	LibPerfORate = {"optional"},
+	TextFix = {"optional", "before"}
+}

@@ -1,0 +1,16 @@
+Identifier = "UIX"
+Name = "Rift UI eXtensions"
+Description = "Additional UI elements for addons"
+
+Author = "Thorarin"
+Website = ""
+Email = "thorarin@tiwaz.org"
+
+Version = "0.2.1"
+Environment = "1.9"
+
+RunOnStartup = {
+  "main.lua",
+  "DropdownList.lua",
+  "ImageButton.lua"
+}

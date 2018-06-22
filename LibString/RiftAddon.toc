@@ -1,0 +1,30 @@
+Identifier = "LibString"
+Name = "String Library"
+NameShort = "LibString"
+Description = "Adds new utility methods to the Lua string table for use by other Addons."
+
+Author = "Imhothar"
+Website = "http://rift.curseforge.com/addons/libstring/"
+Email = "imhothar@freenet.de"
+
+Version = "1.0.1"
+Environment = "1.9"
+
+RunOnStartup = {
+	"concat.lua",
+	"formatn.lua",
+	"insert.lua",
+	"join.lua",
+	"prefix.lua",
+	"split.lua",
+	"suffix.lua",
+	"tostring.lua",
+	"trim.lua",
+--@alpha@
+-- "test.lua",
+--@end-alpha@
+}
+-- X-Curse-Packaged-Version: 1.0.1
+-- X-Curse-Project-Name: LibString
+-- X-Curse-Project-ID: libstring
+-- X-Curse-Repository-ID: rift/libstring/mainline

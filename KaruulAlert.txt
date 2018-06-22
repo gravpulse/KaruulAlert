@@ -1,0 +1,102 @@
+KaruulAlert
+------------------------------------------------
+ Karuul's Alerting System v1.33.3
+------------------------------------------------
+Inspired by WoW's Power Auras this is a fully configurable alerting system. Track what you want how you want. Setup alerts for such things as...
+- A debuff you want to keep up on your target
+- Your focus is low on life
+- An ability just came off cooldown
+- You are running low on mana
+- much much more...
+
+Getting Started:
+As KaruulAlert is completely customizable it needs to know a little about your character before you start. So the first thing you should do is open the configuration panel and enable the ability scanner. This will now start building the list of buffs and abilities for you to set alerts for.
+
+1. Open configuration by typing /karuulalert (or /kalert)
+
+2. Check the Enable Ability Scanner check box at the lower left of configuration the screen
+
+At this point you will have a good amount of items to choose from but to get the full list of what you can do play around a little. Switch roles, buff up, click on random players (load their buffs too). Once done disable the ability scanner to save resources.
+Now you should have all you need to get going. First stop Name, what do you want to call this alert you are making? After that it's just a matter of checking off what you want to track, typing in the ability or buff and choosing what your alert will look like.
+
+1. Open configuration (/karuulalert)
+
+2. Enter a Name for your alert
+
+3. Select Buff, Ability, or Resource
+
+4. Select when you want to be notified
+
+5. Select the who the alert will look at
+
+6. Enter the name of the buff/ability or select the resource.
+
+7. Customize the alert
+
+8. Click Save
+
+You now have an alert for your gaming pleasure.
+
+--------------------------
+- Alert Sets and Sub Sets
+--------------------------
+Because alerts often only apply to one specific role you may be playing, KaruulAlert allows you group your alerts in different sets.
+You can define up to 6 different sets of alerts, as well as 10 sub sets. Only one set and one sub set can be active at any time.
+It's recommended to place any alerts specific to your current role in an Alert Set and to use Alert Sub Sets for generic alerts.
+
+To get started using sets you simply need to go to the config screen. You will see controls above the Alert selection box. You use the left and right buttons to move through the available sets and sub sets.
+
+How To:
+
+Add to a Set
+- Select the set you want then add alerts as normal. When clicking Save the alert will be saved to the currently selected set.
+
+Copy Alerts from Set to Set
+- Edit the alert from the set you want to copy from. Go to the set you want to copy to. Save alert to active set.
+
+Change Sets
+- Via config tool, simply select the set you want and exit the tool. 
+- Via command prompt type /karuulalert set={number}, or
+  use /karuulalert set=auto to automatically activate the set corresponding to your active role.
+
+
+Features:
+***********
+* Tracking
+***********
+Buffs
+- Active/Missing 
+- Player/Target/Focus
+- Timer/Warning
+Abilities
+-  Available/On Cooldown
+-  Timer/Warning
+Resources
+- Exact Value/Percent
+- Player/Target/Focus
+- Health/Mana/Energy/Power/Charge/Combo Points
+- Above/Below
+
+***********
+* Alerting
+***********
+Display Default Icon
+Display Addon Image
+Display Custom Image
+Display Custom Text
+Display Timers
+***********
+* Other
+***********
+Active Monitor
+- New Ability
+- New Buff
+Alert Sets
+Languages
+- English
+- French
+- German
+- Russian
+
+
+
