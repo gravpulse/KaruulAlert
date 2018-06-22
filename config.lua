@@ -29,18 +29,18 @@ kAlert.config.yieldThresholds = { 0.03, 0.045, 0.07 }
 
 local function getAlertSet(setNumber, setsTable)
 	local targetSet
-	
+
 	if setsTable == kAlertAlerts.sets and kAlert.alertSet.active == setNumber then
 		return kAlert.alertSet
 	end
-	
+
 	if setsTable == kAlertAlerts.subSets and kAlert.alertSubSet.active == setNumber then
 		return kAlert.alertSubSet
 	end
-	
+
 	targetSet = private.AlertSet.Create(setsTable)
 	targetSet:Load(setNumber)
-	
+
 	return targetSet
 end
 
@@ -76,10 +76,10 @@ local function buildLayoutFrame()
 			window:SetVisible(false)
 			kAlert.config.mainFrame:SetVisible(true)
 		end, "Save")
-	
+
 	window.btCancel = kUtils.buildButton("btCancel",window,35,120,kAlertTexts.btCancel)
 	window.btCancel:SetPoint("LEFTCENTER", window.btSave, "RIGHTCENTER")
-	
+
 	window.btCancel:EventAttach(Event.UI.Button.Left.Press,
 		function ()
 			for id, details in pairs(kAlert.screenObjects.object) do
@@ -91,17 +91,17 @@ local function buildLayoutFrame()
 			window:SetVisible(false)
 			kAlert.config.mainFrame:SetVisible(true)
 		end, "Cancel")
-	
+
 	function window.Open(alertSet)
 		window.alertSet = alertSet
 		window:SetVisible(true)
-		
+
 		kUtils.queueTask(function()
 			kAlert.screenObjects.clear()
 			for id, details in pairs(window.alertSet.alerts) do
 				kAlert.screenObjects.add(details)
 			end
-			
+
 			for i, details in ipairs(kAlert.screenObjects.object) do
 				if details.name ~= nil then
 					details:SetVisible(true)
@@ -139,7 +139,7 @@ local function buildAboutFrame()
 
 	window.btClose = kUtils.buildButton("btClose",window,35,120,kAlertTexts.btClose,"close")
 	window.btClose:SetPoint ("TOPRIGHT", window, "TOPRIGHT", -9, 16)
-	
+
 	window.btClose:EventAttach(Event.UI.Button.Left.Press, function() window:SetVisible(false) end, "Close")
 
 	kAlert.config.aboutFrame = window
@@ -155,11 +155,11 @@ local function buildHelpFrame()
 	window:SetVisible(false)
 	-- Mover Box
 	window.frMoveBar = kUtils.buildWindowMover("frMoveBar", window, true)
-	
+
 	window.frIndex = kUtils.buildListPane("frIndex",window, table.getn(private.helpIndex)*20,210)
 	window.frIndex:SetPoint ("TOPLEFT", window, "TOPLEFT", 30, 65)
 	window.frIndex.fillTextList(private.helpIndex)
-	
+
 	function window.navigateTo(indexNumber, sectionNumber)
 		if indexNumber then
 			window.frIndex.setSelected(private.helpIndex[indexNumber])
@@ -170,7 +170,7 @@ local function buildHelpFrame()
 			window.scrPage:SetPosition(math.min(offset, rangeMax))
 		end
 	end
-	
+
 	-- Unfortunately we need a global variable to be able to access this function from HTML right now
 	kAlertHelpNavigateTo = window.navigateTo
 
@@ -193,28 +193,28 @@ local function buildHelpFrame()
 		window.scrPage:SetPosition(0)
 		window.scrPage:SetRange(0, math.max(0, window.frPage:GetHeight()- window.frView:GetHeight()))
 	end
-	
+
 	window.frView = UI.CreateFrame("Mask", "frView", window)
 	window.frView:SetHeight(window:GetHeight() - 120)
 	window.frView:SetWidth(window:GetWidth() - window.frIndex:GetWidth() - 70)
 	window.frView:SetPoint ("TOPLEFT", window.frIndex, "TOPRIGHT", 10, 0)
 	window.frView.outline = kUtils.setOutline(window.frView)
-	
+
 	window.frPage = kUtils.buildFrame("frPage", window.frView, window.frView:GetHeight(), window.frView:GetWidth())
 	window.frPage:SetBackgroundColor(0,0,0,0.5)
 	window.frPage:SetPoint("TOPLEFT", window.frView, "TOPLEFT")
-	
+
 	window.scrPage = UI.CreateFrame("RiftScrollbar", "scrPage", window)
 	window.scrPage:SetPoint("TOPLEFT", window.frView, "TOPRIGHT")
 	window.scrPage:SetHeight(window.frView:GetHeight())
 	window.scrPage:SetRange(0, math.max(0, window.frPage:GetHeight() - window.frView:GetHeight()))
-	
+
 	window.scrPage:EventAttach(Event.UI.Scrollbar.Change,
 		function(self, handle)
 			local value = self:GetPosition()
 			window.frPage:SetPoint("TOPLEFT", window.frView, "TOPLEFT", 0, -1 * value)
 		end, "PageScroll")
-	
+
 	window.frView:EventAttach(Event.UI.Input.Mouse.Wheel.Back,
 		function()
 			local minRange, maxRange = window.scrPage:GetRange()
@@ -222,18 +222,18 @@ local function buildHelpFrame()
 			local value = math.min(maxRange - 1, window.scrPage:GetPosition() + 30)
 			window.scrPage:SetPosition(value)
 		end, "PageWheelBack")
-		
+
 	window.frView:EventAttach(Event.UI.Input.Mouse.Wheel.Forward,
 		function()
 			local value = math.max(0, window.scrPage:GetPosition() - 30)
 			window.scrPage:SetPosition(value)
 		end, "PageWheelForward")
-	
+
 	window.ibConfig = UI.CreateFrame("Texture", "ibConfig", window.frPage)
 	window.ibConfig:SetTexture("kAlert", "images\\ConfigScreen.png")
 	window.ibConfig:SetVisible(false)
 	window.ibConfig:SetPoint("TOPCENTER", window.frPage, "TOPCENTER",0,2)
-	
+
 	kUtils.taskYield("buildHelpFrame - sections")
 	window.sections = {}
 	window.sections.section = {}
@@ -250,7 +250,7 @@ local function buildHelpFrame()
 		local index = window.sections.count + 1
 		if window.sections.section[index] == nil then
 			local section = {}
-			if index == 1 then 
+			if index == 1 then
 				section.label = kUtils.buildLabel("lblSection" .. tostring(index), window.frPage, 22, window.frPage:GetWidth(), "",true)
 				section.label:SetPoint("TOPLEFT", window.frPage, "TOPLEFT")
 				section.label:SetFontColor(0,0,0)
@@ -273,7 +273,7 @@ local function buildHelpFrame()
 		end
 		window.sections.section[index].label.setWrapText(label)
 		window.sections.section[index].labelLine:SetVisible(true)
-		
+
 		-- Convert Wiki syntax links to Rift "html" code
 		local htmlText = string.gsub(text, "%[%[([^/%]]*)[/]?([^|]*)|([^%]]+)%]%]", function(link, section, text)
 			local indexNumber = nil
@@ -288,7 +288,7 @@ local function buildHelpFrame()
 				end
 				if indexNumber == nil then return text end
 			end
-			
+
 			if string.len(section) > 0 then
 				for i, topic in ipairs(private.helpTopic[link]) do
 					if topic.anchor == section or topic.label == section then
@@ -297,17 +297,17 @@ local function buildHelpFrame()
 					end
 				end
 			end
-			
+
 			return string.format(
 				"<u><font color=\"#FF0000\"><a lua=\"kAlertHelpNavigateTo(%s,%s)\">%s</a></font></u>",
 				tostring(indexNumber), tostring(sectionNumber), text)
-			
+
 		end)
-		
+
 		window.sections.section[index].text.setWrapText(htmlText, true)
 		window.sections.count = window.sections.count + 1
 	end
-	
+
 	function window.sections.getHeight()
 		local height = 0
 		for i = 1, table.getn(window.sections.section), 1 do
@@ -318,10 +318,10 @@ local function buildHelpFrame()
 	end
 
 	window.navigateTo(1)
-	
+
 	window.btClose = kUtils.buildButton("btClose", window, 35, 120, kAlertTexts.btClose, "close")
 	window.btClose:SetPoint("TOPRIGHT", window, "TOPRIGHT", -9, 16)
-	
+
 	window.btClose:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			window:SetVisible(false)
@@ -329,9 +329,9 @@ local function buildHelpFrame()
 			window.ibConfig:SetVisible(false)
 			window.navigateTo(1)
 		end, "Close")
-	
+
 	kAlert.config.helpFrame = window
-	
+
 end
 
 local function buildImportExportFrame()
@@ -347,13 +347,13 @@ local function buildImportExportFrame()
 
 	window.txtExplanation = kUtils.buildLabel("txtExplanation", window, 13, window:GetWidth() - 60, "", true)
 	window.txtExplanation:SetPoint("TOPLEFT", window, "TOPLEFT", 30, 70)
-	
+
 	window.lbData = kUtils.buildLabel("lbData", window, 13, 200, kAlertTexts.lbAlertData, false)
 	window.lbData:SetPoint("TOPLEFT", window.txtExplanation, "BOTTOMLEFT", 0, 10)
-	
+
 	window.ebData = kUtils.buildEditBox("ebData", window, 120, window:GetWidth() - 60, "")
 	window.ebData:SetPoint("TOPLEFT", window.lbData, "BOTTOMLEFT", 0, 5)
-	
+
 	window.txtStatus = kUtils.buildLabel("txtStatus", window, 13, window:GetWidth() - 60, "", true)
 	window.txtStatus:SetPoint("TOPLEFT", window.ebData, "BOTTOMLEFT", 0, 10)
 
@@ -362,9 +362,9 @@ local function buildImportExportFrame()
 
 	window.btCancel = kUtils.buildButton("btCancel", window, 35, 120, kAlertTexts.btCancel)
 	window.btCancel:SetPoint("LEFTCENTER", window.btImport, "RIGHTCENTER")
-	
+
 	local autoSelect = false
-	
+
 	function window.Open(title, explanation, data, status, autoSelect)
 		window:SetTitle(title)
 		window.txtExplanation:SetText(explanation)
@@ -377,29 +377,29 @@ local function buildImportExportFrame()
 			window.ebData.text:SetKeyFocus(true)
 		end
 	end
-	
+
 	function window.Close()
 		kAlert.screenObjects:refresh()
 		kAlert.config.mainFrame.clearAlert()
 		kAlert.config.mainFrame.frScreenObjects.fillList(kAlert.config.mainFrame.alertSet.alerts)
-		window:SetVisible(false)	
+		window:SetVisible(false)
 	end
-	
+
 	function window.ebData.text:SelectAll()
 		if autoSelect then
 			self:SetSelection(0, self:GetText():len())
 		end
 	end
-	
+
 	function window.AutoSelect(value)
 		if value then
 			window.ebData.text:SetKeyFocus(true)
 			window.ebData.text:SelectAll()
 		end
-		
+
 		autoSelect = value
-	end	
-	
+	end
+
 	window.ebData.text:EventAttach(Event.UI.Textfield.Select, window.ebData.text.SelectAll, "selectionChanged")
 	window.ebData.text:EventAttach(Event.UI.Input.Mouse.Left.Click, window.ebData.text.SelectAll, "mouseClick")
 
@@ -408,7 +408,7 @@ local function buildImportExportFrame()
 	end, "cancel")
 
 	kAlert.config.importExportFrame = window
-	
+
 end
 
 local function buildAlertPreview(name, parent)
@@ -427,7 +427,7 @@ local function buildGeneralConfigFrame()
 	window:SetWidth(455)
 	window:SetHeight(525)
 	--window:SetPoint("CENTER", UIParent, "CENTER", 0, -150)
-	
+
 	-- Mover Box and Close button
 	window.frMoveBar = kUtils.buildWindowMover("frMoveBar", window, true)
 	window.btClose = kUtils.buildButton("btClose",window,35,100,kAlertTexts.btClose,"close")
@@ -439,8 +439,8 @@ local function buildGeneralConfigFrame()
 	window.dlAlertTextEffects = UIX.CreateDropdownList("dlAlertTextEffects", window)
 	window.dlAlertTextEffects:SetPoint("TOPLEFT", window.lbAlertTextEffects, "BOTTOMLEFT", 0, 5)
 	window.dlAlertTextEffects:SetWidth(200)
-	window.dlAlertTextEffects:SetItems(kAlertTexts.tbTextEffects)	
-	
+	window.dlAlertTextEffects:SetItems(kAlertTexts.tbTextEffects)
+
 	window.frTextPreview = buildAlertPreview("frTextPreview", window)
 	window.frTextPreview:SetPoint("TOPLEFT", window.lbAlertTextEffects, "TOPRIGHT", 10, 5)
 	window.frTextPreview.text:SetText("Text")
@@ -452,17 +452,17 @@ local function buildGeneralConfigFrame()
 
 	window.lbAlertCounterEffects = kUtils.buildLabel("lbTextEffects", window, 13, 200, kAlertTexts.lbAlertCounterEffects, false)
 	window.lbAlertCounterEffects:SetPoint("TOPLEFT", window.dlAlertTextEffects, "BOTTOMLEFT", 0, 15)
-	
+
 	window.dlAlertCounterEffects = UIX.CreateDropdownList("dlAlertCounterEffects", window)
 	window.dlAlertCounterEffects:SetPoint("TOPLEFT", window.lbAlertCounterEffects, "BOTTOMLEFT", 0, 5)
 	window.dlAlertCounterEffects:SetWidth(200)
 	window.dlAlertCounterEffects:SetItems(kAlertTexts.tbTextEffects)
-	
+
 	window.frCounterPreview = buildAlertPreview("frCounterPreview", window)
 	window.frCounterPreview:SetPoint("TOPLEFT", window.lbAlertCounterEffects, "TOPRIGHT", 10, 5)
 	window.frCounterPreview.text:SetText("12")
 	window.frCounterPreview.text:SetFontSize(30)
-	
+
 	function window.dlAlertCounterEffects.Event:SelectionChange(index)
 		window.frCounterPreview.text:SetShadow(index - 1)
 	end
@@ -470,44 +470,44 @@ local function buildGeneralConfigFrame()
 	window.lbPerformance = kUtils.buildLabel("lbPerformance", window, 13, 200, kAlertTexts.lbPerformance, false)
 	window.lbPerformance:SetPoint("TOPLEFT", window.dlAlertCounterEffects, "BOTTOMLEFT", 0, 15)
 	window.tbPerformance = kUtils.buildToggleBox("tbPerformance", window, 20, 200, kAlertTexts.tbPerformance, 1, false)
-	window.tbPerformance:SetPoint("TOPLEFT", window.lbPerformance, "BOTTOMLEFT", 0, 5)	
+	window.tbPerformance:SetPoint("TOPLEFT", window.lbPerformance, "BOTTOMLEFT", 0, 5)
 	window.txtPerformance = kUtils.buildLabel("txtPerformance", window, 13, 200, kAlertTexts.txtPerformance, true)
-	window.txtPerformance:SetPoint("TOPLEFT", window.tbPerformance, "TOPRIGHT", 10, 0)	
+	window.txtPerformance:SetPoint("TOPLEFT", window.tbPerformance, "TOPRIGHT", 10, 0)
 
 	window.lbOther = kUtils.buildLabel("lbScanner", window, 13, 200, kAlertTexts.lbScanner, false)
 	window.lbOther:SetPoint("TOPLEFT", window.tbPerformance, "BOTTOMLEFT", 0, 15)
-	
+
 	window.btScannerOn = kUtils.buildButton("btScannerOn", window, 35, 150, kAlertTexts.btScannerStart)
-	window.btScannerOn:SetPoint("TOPLEFT", window.lbOther, "BOTTOMLEFT", 0, 5)	
+	window.btScannerOn:SetPoint("TOPLEFT", window.lbOther, "BOTTOMLEFT", 0, 5)
 	window.btScannerOff = kUtils.buildButton("btScannerOff", window, 35, 150, kAlertTexts.btScannerStop)
-	window.btScannerOff:SetPoint("TOPLEFT", window.btScannerOn, "BOTTOMLEFT", 0, 0)	
+	window.btScannerOff:SetPoint("TOPLEFT", window.btScannerOn, "BOTTOMLEFT", 0, 0)
 	window.btResetGlobals = kUtils.buildButton("btResetGlobals", window, 35, 150, kAlertTexts.btResetGlobals)
-	window.btResetGlobals:SetPoint("TOPLEFT", window.btScannerOff, "BOTTOMLEFT", 0, 5)	
+	window.btResetGlobals:SetPoint("TOPLEFT", window.btScannerOff, "BOTTOMLEFT", 0, 5)
 	window.txtScanner = kUtils.buildLabel("txtScanner", window, 13, 200, kAlertTexts.txtScanner, true)
-	window.txtScanner:SetPoint("TOPLEFT", window.btScannerOn, "TOPRIGHT", 60, 0)		
+	window.txtScanner:SetPoint("TOPLEFT", window.btScannerOn, "TOPRIGHT", 60, 0)
 	window.txtResetGlobals = kUtils.buildLabel("txtResetGlobals", window, 13, 200, kAlertTexts.txtResetGlobals, true)
-	window.txtResetGlobals:SetPoint("TOPLEFT", window.btResetGlobals, "TOPRIGHT", 60, 0)		
-	
+	window.txtResetGlobals:SetPoint("TOPLEFT", window.btResetGlobals, "TOPRIGHT", 60, 0)
+
 	window.btClose2 = kUtils.buildButton("btClose", window, 35, 100, kAlertTexts.btClose)
 	window.btClose2:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -20, -20)
 
 	window.btSave = kUtils.buildButton("btSave", window, 35, 100, kAlertTexts.btApply)
 	window.btSave:SetPoint("BOTTOMRIGHT", window.btClose2, "BOTTOMLEFT", -10, 0)
-	
+
 	window.btScannerOn:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			window.btScannerOn:SetEnabled(false)
 			window.btScannerOff:SetEnabled(true)
 			kAlert.systemScanner.start()
 		end, "ScannerOn")
-	
-	window.btScannerOff:EventAttach(Event.UI.Button.Left.Press,	
+
+	window.btScannerOff:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			window.btScannerOn:SetEnabled(true)
 			window.btScannerOff:SetEnabled(false)
 			kAlert.systemScanner.stop()
 		end, "ScannerOff")
-	
+
 	window.btResetGlobals:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			kAlertGlobalItems = {}
@@ -517,7 +517,7 @@ local function buildGeneralConfigFrame()
 	function window.close()
 		window:SetVisible(false)
 	end
-	
+
 	-- Loading and saving
 	function window.loadSettings()
 		window.dlAlertTextEffects:SetSelected(kAlertGlobalSettings.textTextEffects + 1)
@@ -528,30 +528,30 @@ local function buildGeneralConfigFrame()
 			window.tbPerformance.setSelected(i)
 			if kAlert.config.yieldThresholds[i] >= kAlertGlobalSettings.yieldThreshold then break end
 		end
-		
+
 		window.btScannerOn:SetEnabled(not kAlert.systemScanner.activeScanning)
 		window.btScannerOff:SetEnabled(kAlert.systemScanner.activeScanning)
 	end
-	
+
 	function window.saveSettings()
 		kAlertGlobalSettings.textTextEffects = window.dlAlertTextEffects:GetSelected() - 1
 		kAlertGlobalSettings.counterTextEffects = window.dlAlertCounterEffects:GetSelected() - 1
 		kAlertGlobalSettings.yieldThreshold = kAlert.config.yieldThresholds[window.tbPerformance.getSelected()]
-				
+
 		kUtils.queueTask(function()
 			kAlert.screenObjects.setTextsShadow(kAlertGlobalSettings.textTextEffects)
 			kAlert.screenObjects.setCountersShadow(kAlertGlobalSettings.counterTextEffects)
 		end)
-		
+
 	end
-	
+
 	window.btSave:EventAttach(Event.UI.Button.Left.Press, window.saveSettings, "Save")
 	window.btClose:EventAttach(Event.UI.Button.Left.Press, window.close, "Close")
 	window.btClose2:EventAttach(Event.UI.Button.Left.Press, window.close, "Close")
-	
+
 	window.loadSettings()
 	kAlert.config.generalConfigFrame = window
-	
+
 end
 
 local function buildShareFrame()
@@ -562,25 +562,25 @@ local function buildShareFrame()
 	window:SetPoint("TOPLEFT", UIParent, "TOPLEFT",UIParent:GetWidth()/2-(window:GetWidth()/2),UIParent:GetHeight()/2-(window:GetHeight()/2))
 	window:SetLayer(99)
 	window:SetVisible(false)
-	
+
 	window.btClose = kUtils.buildButton("btClose", window, 35, 100, kAlertTexts.btClose, "close")
 	window.btClose:SetPoint("TOPRIGHT", window, "TOPRIGHT", -3, 15)
-	
+
 	window.btClose:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			window:SetVisible(false)
 		end, "Close")
-	
+
 	window.txUsers = UI.CreateFrame("Text", "txUsers", window)
 	window.txUsers:SetText(kAlertTexts.lbSharingSelectPlayer)
 	window.txUsers:SetPoint("TOPLEFT", window, "TOPLEFT", 30, 65)
-	
+
 	window.lpUsers = kUtils.buildListPane("lpUsers", window, 400, 150)
 	window.lpUsers:SetPoint("TOPLEFT", window.txUsers, "BOTTOMLEFT", 0, 5)
-	
+
 	window.details = UI.CreateFrame("Frame", "frDetails", window)
 	window.details:SetPoint("TOPLEFT", window.lpUsers, "BOTTOMLEFT", 0, 5)
-	
+
 	window.details.lbPlayer = kUtils.buildLabel("lbPlayer", window.details, 15, 65, kAlertTexts.unitPlayer ..  ":", false)
 	window.details.lbPlayer:SetPoint("TOPLEFT", window.details, "TOPLEFT")
 	window.details.txtPlayer = kUtils.buildLabel("txtPlayer", window.details, 15, 85, "", false)
@@ -590,21 +590,21 @@ local function buildShareFrame()
 	window.details.lbVersion:SetPoint("TOPLEFT", window.details.lbPlayer, "BOTTOMLEFT", 0, 5)
 	window.details.txtVersion = kUtils.buildLabel("txtVersion", window.details, 15, 85, "", false)
 	window.details.txtVersion:SetPoint("TOPLEFT", window.details.lbVersion, "TOPRIGHT")
-	
+
 	window.btShare = kUtils.buildButton("btShare", window, 35, 120, kAlertTexts.btShare)
 	window.btShare:SetPoint("BOTTOMCENTER", window, "BOTTOMCENTER", 0, -20)
 	window.btShare:SetEnabled(false)
-	
+
 	function window.lpUsers.click(button)
 		local selectedUser = window.lpUsers.getSelected()
-		
+
 		window.details.txtPlayer:SetText(selectedUser)
 		window.details.txtVersion:SetText(tostring(kAlert.messaging.users[selectedUser].version))
 		window.btShare:SetEnabled(true)
 	end
-	
+
 	window.btShare:EventAttach(Event.UI.Button.Left.Press,
-		function()	
+		function()
 			local selectedUser = window.lpUsers.getSelected()
 			local selectedAlert = kAlert.config.mainFrame.frScreenObjects.getSelected()
 			if selectedAlert ~= "" then
@@ -628,14 +628,14 @@ local function buildShareFrame()
 	local function updateList()
 		window.lpUsers.fillList(kAlert.messaging.users)
 	end
-	
+
 	table.insert(Event.kAlert.Users.Add, {updateList, "kAlert", "shareFrameUserAdd"})
 
 	updateList()
 	kAlert.messaging.discoverUsers()
 
 	window:SetPoint("TOPLEFT", kAlert.config.mainFrame, "TOPRIGHT", 10, 0)
-	
+
 	kAlert.config.shareFrame = window
 end
 
@@ -649,44 +649,44 @@ local function buildAlertCopyFrame()
 	window:SetVisible(false)
 	-- Mover Box
 	window.frMoveBar = kUtils.buildWindowMover("frMoveBar", window, true)
-	
+
 	window.lbText = UI.CreateFrame("Text", "alertCopyFrameText", window)
 	window.lbText:SetPoint("TOPLEFT", window, "TOPLEFT", 30, 60)
 	window.lbText:SetWidth(290)
 	window.lbText:SetWordwrap(true)
 	window.lbText:SetFontSize(15)
-	
+
 	window.ebAlert = kUtils.buildEditBox("ebAlert", window, 20, 280, kAlertTexts.ebAlertName .. ":", 180)
 	window.ebAlert:SetPoint("TOPLEFT", window.lbText, "BOTTOMLEFT", 0, 15)
 	window.ebAlert.text:SetText("")
-	
+
 	window.ebSet = kUtils.buildEditBoxInteger("ebSet", window, 20, 150, kAlertTexts.lbSet, 50)
 	window.ebSet:SetPoint("TOPLEFT", window.ebAlert, "BOTTOMLEFT", 0, 15)
 	window.ebSet.text:SetText("")
 	window.lbSetHint = kUtils.buildLabel("lbSetHint", window, 15, 100, "(1 - " .. tostring(kAlert.rolesMax) .. ")", false)
 	window.lbSetHint:SetPoint("TOPLEFT", window.ebSet.text, "TOPRIGHT")
-	
+
 	window.ebSubSet = kUtils.buildEditBoxInteger("ebSubSet", window, 20, 150, kAlertTexts.lbSubSet, 50)
 	window.ebSubSet:SetPoint("TOPLEFT", window.ebSet, "BOTTOMLEFT", 0, 10)
 	window.ebSubSet.text:SetText("")
 	window.lbSubSetHint = kUtils.buildLabel("lbSetHint", window, 15, 100, "(1 - 10)", false)
 	window.lbSubSetHint:SetPoint("TOPLEFT", window.ebSubSet.text, "TOPRIGHT")
-	
+
 	window.lbStatus = UI.CreateFrame("Text", "alertCopyFrameStatus", window)
 	window.lbStatus:SetPoint("TOPLEFT", window.ebSubSet, "BOTTOMLEFT", 0, 20)
 	window.lbStatus:SetWidth(290)
 	window.lbStatus:SetWordwrap(true)
 	window.lbStatus:SetFontSize(15)
-	
+
 	local function updateButtonStatus()
 		window.btImport:SetEnabled(window.set ~= nil or window.subSet ~= nil)
 	end
-	
-	
+
+
 	window.ebSet.text:EventAttach(Event.UI.Textfield.Change,
 		function(self, handle)
 			window.ebSubSet.text:SetText("")
-		
+
 			local setNumber = kUtils.toInteger(self:GetText())
 			if self:GetText() == "" then
 				window.set = nil
@@ -696,14 +696,14 @@ local function buildAlertCopyFrame()
 				window.set = setNumber
 				window.subSet = nil
 			end
-			
+
 			updateButtonStatus()
 		end, "SetChange")
-	
+
 	window.ebSubSet.text:EventAttach(Event.UI.Textfield.Change,
 		function(self, handle)
 			window.ebSet.text:SetText("")
-		
+
 			local setNumber = kUtils.toInteger(self:GetText())
 			if self:GetText() == "" then
 				window.subSet = nil
@@ -713,10 +713,10 @@ local function buildAlertCopyFrame()
 				window.subSet = setNumber
 				window.set = nil
 			end
-			
+
 			updateButtonStatus()
 		end, "SubSetChange")
-	
+
 	function window.open(title, text, alertName, set, subSet, buttonText)
 		window:SetTitle(title)
 		window.lbText:SetText(text)
@@ -729,10 +729,10 @@ local function buildAlertCopyFrame()
 		updateButtonStatus()
 		window:SetVisible(true)
 	end
-	
+
 	window.btImport = kUtils.buildButton("btImport",window,35,120,kAlertTexts.btImport)
 	window.btImport:SetPoint("BOTTOMCENTER", window, "BOTTOMCENTER",-60,-20)
-	
+
 	window.btImport:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			local set, setsTable
@@ -743,7 +743,7 @@ local function buildAlertCopyFrame()
 				set = window.subSet
 				setsTable = kAlertAlerts.subSets
 			end
-				
+
 			local result, text = window.callback(window.ebAlert.text:GetText(), set, setsTable)
 			if result == true then
 				window:SetVisible(false)
@@ -755,7 +755,7 @@ local function buildAlertCopyFrame()
 
 	window.btCancel = kUtils.buildButton("btCancel",window,35,120,kAlertTexts.btCancel)
 	window.btCancel:SetPoint("LEFTCENTER", window.btImport, "RIGHTCENTER")
-	
+
 	window.btCancel:EventAttach(Event.UI.Button.Left.Press,
 		function()
 			window.cancelCallback()
@@ -790,7 +790,7 @@ local function editAlert(window)
 			window.ebAlertItem.text:SetText(alertData.itemName)
 			window.tbResourceTypes.setSelected(1)
 		end
-		
+
 		if alertData.type == 1 then
 			window.ebStacks.text:SetText(tostring(alertData.itemValue or ""))
 		elseif alertData.type == 3 then
@@ -817,7 +817,7 @@ local function editAlert(window)
 				end
 			end
 		end
-		
+
 		window.ckSelfCast:SetChecked(alertData.selfCast)
 		window.ckInterruptible:SetChecked(alertData.interruptibleCast or false)
 		if alertData.itemLength > 0 then
@@ -849,7 +849,7 @@ local function editAlert(window)
 			window.ebImage.index = 0
 			window.ckDefaultImage:SetChecked(true)
 		end
-		
+
 		window.ebImageX.text:SetText(tostring(alertData.imageX))
 		window.ebImageY.text:SetText(tostring(alertData.imageY))
 		window.ebImageScale.text:SetText(tostring(alertData.imageScale))
@@ -899,7 +899,7 @@ end
 
 local function saveAlert(window)
 	window.setStatus("")
-	
+
 	local v = kUtils.FormsValidator.create()
 	local alertData = {}
 
@@ -913,17 +913,17 @@ local function saveAlert(window)
 		local textRed = v:GetIntegerInput(window.ebRed, 100, true, 0, 100)
 		local textGreen = v:GetIntegerInput(window.ebGreen, 100, true, 0, 100)
 		local textBlue = v:GetIntegerInput(window.ebBlue, 100, true, 0, 100)
-		
+
 		alertData.layer = v:GetIntegerInput(window.ebAlertLayer, 1, false, 1, 40)
 		alertData.unit = kAlert.units[window.tbUnit.getSelected()]
 		alertData.unitRelation = window.tbRelation.getSelected()
-		
+
 		alertData.type = window.tbAlertTypes.getSelected()
-		
+
 		if alertData.type ~= 3 then
 			alertData.typeToggle = (window.tbAlertToggle.getSelected() == 1)
 		end
-		
+
 		if alertData.type == 1 then
 			alertData.itemValue = tonumber(window.ebStacks.text:GetText()) or 1
 		elseif alertData.type == 3 then
@@ -947,7 +947,7 @@ local function saveAlert(window)
 				end
 			end
 		end
-		
+
 		if alertData.rangeLow == nil then alertData.rangeLow = 0 end
 		if alertData.rangeHigh == nil then alertData.rangeHigh = 0 end
 		alertData.itemId = nil
@@ -956,40 +956,40 @@ local function saveAlert(window)
 			-- Use item name as default alert name
 			alertData.name = string.split(alertData.itemName, ",")[1]
 		end
-		
+
 		alertData.selfCast = window.ckSelfCast:GetChecked()
 		alertData.interruptibleCast = window.ckInterruptible:GetChecked()
 		alertData.active = not window.ckDisableAlert:GetChecked()
 		alertData.combatOnly = window.ckCombatOnly:GetChecked()
 		alertData.image = window.ebImage.image
 		alertData.imageSource = window.ebImage.source
-		
+
 		local imageOpacity = v:GetNumberInput(window.ebImageOpacity, 100, false, 0, 100)
 		alertData.text = window.ebText.text:GetText()
 		local textOpacity = v:GetNumberInput(window.ebTextOpacity, 100, false, 0, 100)
-		
+
 		if string.len(window.ebTextFont.text:GetText()) > 0 then
 			alertData.textFont = "custom\\" .. window.ebTextFont.text:GetText()
 		else
 			alertData.textFont = ""
 		end
-		
+
 		alertData.textSize = v:GetIntegerInput(window.ebTextSize, 30, false, 1)
 		alertData.textLocation = kAlert.config.tLocation[window.tbTextLocation.getSelected()]
 		alertData.textInside = (window.tbTextInside.getSelected() == 1)
 		alertData.timer = window.ckTimer:GetChecked()
-		
+
 		local timerLength = v:GetIntegerInput(window.ebTimerLength, 5, false, 0)
 		alertData.timerSize = v:GetIntegerInput(window.ebTimerSize, 30, false, 1)
 		alertData.timerLocation = kAlert.config.tLocation[window.tbTimerLocation.getSelected()]
 		alertData.timerInside = (window.tbTimerInside.getSelected() == 1)
 		alertData.sound = false
 		alertData.set = window.alertSet.active
-		
+
 		if v.validationError then
 			return kAlertTexts.statAlertInvalid .. ": " .. v.validationError, v.validationControl
 		end
-		
+
 		if string.len(alertData.name) == 0 then
 			return kAlertTexts.statAlertNameMissing, window.ebAlertName.text
 		end
@@ -1003,11 +1003,11 @@ local function saveAlert(window)
 		alertData.textOpacity = textOpacity / 100
 		alertData.imageWidth = window.ebImage:GetTextureWidth() * alertData.imageScale
 		alertData.imageHeight = window.ebImage:GetTextureHeight() * alertData.imageScale
-		
+
 		if window.frScreenObjects.itemCount >= kAlert.screenObjects.max then
 			return "Alert failed to add - maximum has been reached"
 		end
-	
+
 		if window.tbAlertTypes.getSelected() == 4 then
 			-- No additional validation
 		elseif window.tbAlertTypes.getSelected() == 3 then
@@ -1037,7 +1037,7 @@ local function saveAlert(window)
 			return "No alert type set"
 		end
 	end
-	
+
 	local statusText, control = getFormData()
 	if statusText then
 		window.setStatus(statusText)
@@ -1046,7 +1046,7 @@ local function saveAlert(window)
 		end
 		return
 	end
-	
+
 	local alertAddStatus
 	if alertData.name ~= window.oldAlertName and window.alertSet.alerts[alertData.name] ~= nil then
 		window.setStatus(kAlertTexts.statAlertAlreadyExists)
@@ -1060,13 +1060,13 @@ local function saveAlert(window)
 			window.alertSet:Delete(window.oldAlertName)
 		end
 	end
-	
+
 	window.alertSet:Add(alertData)
 	window.alertSet:Save()
-	
+
 	kAlert.screenObjects:refresh()
 	window.clearAlert()
-	
+
 	window.frScreenObjects.fillList(window.alertSet.alerts)
 	window.setStatus(alertAddStatus)
 end
@@ -1081,7 +1081,7 @@ local function buildMainFrame()
 
 	-- Mover Box
 	window.frMoveBar = kUtils.buildWindowMover("frMoveBar", window, true)
-	
+
 	-- Main Menu
 	local function importEnabled()
 		return window.frScreenObjects.itemCount < kAlert.screenObjects.max
@@ -1092,11 +1092,11 @@ local function buildMainFrame()
 	local function exportSetEnabled()
 		return window.frScreenObjects.itemCount > 0
 	end
-	
-	local menu = 
+
+	local menu =
 	{
 		{
-			kAlertTexts.miFile, 
+			kAlertTexts.miFile,
 			{
 				{ kAlertTexts.btImportAlert, kAlert.config.importAlert, importEnabled },
 				{ kAlertTexts.btImportSet, kAlert.config.importSet, importEnabled },
@@ -1113,13 +1113,13 @@ local function buildMainFrame()
 			}
 		}
 	}
-	
+
 	window.mbMain = kUtils.buildMenuBar("mbMain", window, 20, window:GetWidth() - 60 , menu)
 	window.mbMain:SetLayer(9000)
 	window.mbMain:SetPoint("TOPLEFT", window, "TOPLEFT", 30, 65)
 
 	kUtils.taskYield("buildMainFrame")
-	
+
 	-- Alert Set Controls
 	window.btASLeft = kUtils.buildButton("btASLeft",window,25,60,"<-")
 	window.btASLeft:SetPoint("TOPLEFT", window.mbMain, "BOTTOMLEFT", 0, 5)
@@ -1131,15 +1131,15 @@ local function buildMainFrame()
 			elseif window.alertSet.setsTable == kAlertAlerts.subSets then
 				window.alertSet = getAlertSet(kAlert.rolesMax, kAlertAlerts.sets)
 			end
-		
+
 			window.txtASNumber.updateText()
 			kAlert.screenObjects:refresh()
 			window.frScreenObjects.fillList(window.alertSet.alerts)
 		end, "ASLeft")
-	
+
 	window.frASFrame = kUtils.buildFrame("frASFrame",window,25,80)
 	window.frASFrame:SetPoint("BOTTOMLEFT", window.btASLeft, "BOTTOMRIGHT", 0, 0)
-	
+
 	window.txtASNumber = kUtils.buildLabel("txtASNumber", window, 15, 80, "(set)")
 	window.txtASNumber:SetPoint("CENTER", window.frASFrame, "CENTER")
 
@@ -1167,12 +1167,12 @@ local function buildMainFrame()
 					window.alertSet = getAlertSet(window.alertSet.active + 1, kAlertAlerts.subSets)
 				end
 			end
-				
+
 			window.txtASNumber.updateText()
 			kAlert.screenObjects:refresh()
 			window.frScreenObjects.fillList(window.alertSet.alerts)
 		end, "ASRight")
-	
+
 	kUtils.taskYield("frScreenObjects")
 	window.frScreenObjects = kUtils.buildListPane("frScreenObjects",window, 410, 200)
 	window.frScreenObjects:SetPoint("TOPLEFT", window.btASLeft, "BOTTOMLEFT", 0, 5)
@@ -1189,14 +1189,14 @@ local function buildMainFrame()
 		end
 		kAlert.screenObjects:refresh()
 	end
-	
+
 	local function shareAlert()
 		kUtils.queueTask(function()
 			buildShareFrame()
 			kAlert.config.shareFrame:SetVisible(true)
 		end)
 	end
-	
+
 	function window.frScreenObjects.click(button)
 		if button == "LEFT" then
 			if window.frScreenObjects.lastSelected == window.frScreenObjects.getSelected() and (window.frScreenObjects.lastSelectedTime + 0.2 > Inspect.Time.Real()) then
@@ -1217,20 +1217,20 @@ local function buildMainFrame()
 				})
 		end
 	end
-	
+
 	window.btEdit = kUtils.buildButton("btEdit",window,35,100,kAlertTexts.btEdit)
 	window.btEdit:SetPoint("TOPLEFT", window.frScreenObjects, "BOTTOMLEFT", 0, 5)
 	window.btEdit:EventAttach(Event.UI.Input.Mouse.Left.Click, function(self, handle) editAlert(window) end, "edit")
 	kUtils.taskYield()
-	
+
 	window.btEditLayout = kUtils.buildButton("btEditLayout",window,35,100,kAlertTexts.btEditLayout)
 	window.btEditLayout:SetPoint("TOPLEFT", window.btEdit, "TOPRIGHT")
 
 	window.btConfig = kUtils.buildButton("btConfig", window, 35, 100,kAlertTexts.btGeneralConfiguration)
 	window.btConfig:SetPoint("TOPLEFT", window.btEdit, "BOTTOMLEFT", 50, 0)
-	
+
 	window.btEditLayout:EventAttach(Event.UI.Button.Left.Press,
-		function()	
+		function()
 			window:SetVisible(false)
 			kAlert.config.mainFrame.clearAlert()
 			if kAlert.config.layoutFrame == nil then
@@ -1254,7 +1254,7 @@ local function buildMainFrame()
 
 	window.ckDisableAlert = kUtils.buildCheckBox("ckDisableAlert",window,20,180,kAlertTexts.ckDisableAlert)
 	window.ckDisableAlert:SetPoint ("TOPLEFT", window.ebAlertLayer, "TOPRIGHT", 10, 0)
-	
+
 	-- Trigger Info
 	kUtils.taskYield("tbAlertTypes")
 	window.tbAlertTypes = kUtils.buildToggleBox("tbAlertTypes",window, 20, 200, kAlert.config.evaluationTypes)
@@ -1337,23 +1337,23 @@ local function buildMainFrame()
 	kUtils.taskYield("ebAlertItem")
 	window.ebAlertItem = kUtils.buildEditBox("ebAlertItem", window, 20, 200, kAlertTexts.ability .. ":")
 	window.ebAlertItem:SetPoint("TOPLEFT", window.tbAlertTypes, "BOTTOMLEFT", 0, 5)
-	
+
 	local function updateDefaultImage()
 		local itemName = string.split(window.ebAlertItem.text:GetText(), ",")[1]
 		if kAlertGlobalItems[itemName] and kAlertGlobalItems[itemName].icon then
 			window.ebImage.setDefault(kAlertGlobalItems[itemName].icon)
 		else
 			window.ebImage.clear()
-		end	
+		end
 	end
-	
+
 	function window.ebAlertItem.text.Event:KeyFocusLoss()
 		window.frItemDrop:SetVisible(false)
 	end
 
 	function window.ebAlertItem.text.Event:KeyUp()
 		local itemName = window.ebAlertItem.text:GetText()
-		
+
 		kUtils.queueTask(function()
 			if itemName ~= nil and string.len(itemName) > 0 then
 				if window.ebAlertItem.label:GetText() == kAlertTexts.buff .. ":" then
@@ -1363,7 +1363,7 @@ local function buildMainFrame()
 				if string.len(itemName) > 0 then
 					window.frItemDrop.clearList()
 					kUtils.taskYield()
-					
+
 					local exactMatch = false
 					for id, _ in kUtils.pairsByKeys(kAlertGlobalItems) do
 						if string.prefix(id:upper(), itemName:upper()) then
@@ -1381,7 +1381,7 @@ local function buildMainFrame()
 			updateDefaultImage()
 		end)
 	end
-	
+
 	function window.ebAlertItem.text.Event:LeftUp()
 		local itemType, held = Inspect.Cursor()
 		if itemType == "ability" then
@@ -1401,15 +1401,15 @@ local function buildMainFrame()
 			Command.Cursor(nil)
 		end
 	end
-	
+
 	window.frItemDrop = kUtils.buildListPane("frItemDrop",window, 200,200)
 	window.frItemDrop:SetPoint("TOPRIGHT", window.ebAlertItem.text, "BOTTOMRIGHT", 0, 0)
 	window.frItemDrop:SetBackgroundColor(0, 0, 0, 1)
 	window.frItemDrop:SetLayer(2)
 	window.frItemDrop:SetVisible(false)
-	
+
 	function window.frItemDrop.click(button)
-	
+
 		if window.frItemDrop.lastSelected == window.frItemDrop.getSelected() and window.frItemDrop.lastSelectedTime == math.floor(Inspect.Time.Real()) then
 			local itemPre = ""
 			if window.ebAlertItem.label:GetText() == kAlertTexts.buff .. ":" then
@@ -1426,9 +1426,9 @@ local function buildMainFrame()
 		else
 			window.frItemDrop.lastSelected = window.frItemDrop.getSelected()
 		end
-		
+
 		window.frItemDrop.lastSelectedTime = math.floor(Inspect.Time.Real())
-		
+
 	end
 
 	kUtils.taskYield("tbResourceTypes")
@@ -1439,11 +1439,11 @@ local function buildMainFrame()
 	window.ebBuffLength = kUtils.buildEditBoxInteger("ebBuffLength",window,20,200,kAlertTexts.buff .. " " .. kAlertTexts.ebTimerLength .. ":")
 	window.ebBuffLength:SetPoint("TOPLEFT", window.ebAlertItem, "BOTTOMLEFT", 0, 5)
 	window.ebBuffLength.text:SetText("")
-	
+
 	kUtils.taskYield("ckInterruptible")
 	window.ckInterruptible = kUtils.buildCheckBox("ckInterruptible", window, 20, 200, kAlertTexts.ckInterruptible)
 	window.ckInterruptible:SetPoint("TOPLEFT", window.ebAlertItem, "BOTTOMLEFT", 0, 5)
-	
+
 	kUtils.taskYield("ckSelfCast")
 	window.ckSelfCast = kUtils.buildCheckBox("ckSelfCast", window, 20, 200, kAlertTexts.ckSelfCast)
 	window.ckSelfCast:SetPoint("TOPLEFT", window.ebBuffLength, "BOTTOMLEFT", 0, 5)
@@ -1452,11 +1452,11 @@ local function buildMainFrame()
 	kUtils.taskYield("tbUnit")
 	window.tbUnit = kUtils.buildToggleBox("tbUnit",window, 20, 100, kAlert.config.units,2)
 	window.tbUnit:SetPoint("TOPLEFT", window.ckSelfCast, "BOTTOMLEFT", 0, 5)
-	
+
 	kUtils.taskYield("tbRelation")
 	window.tbRelation = kUtils.buildToggleBox("tbRelation",window.tbUnit, 20, 100, {kAlertTexts.ckFriend,kAlertTexts.ckFoe},2,true)
 	window.tbRelation:SetPoint("TOPLEFT", window.tbUnit, "BOTTOMLEFT", 0, 5)
-	
+
 	window.tbAlertToggle = kUtils.buildToggleBox("tbAlertToggle",window, 20, 100, {kAlertTexts.tbAlertToggleAbove,kAlertTexts.tbAlertToggleBelow},2)
 	window.tbAlertToggle:SetPoint("TOPLEFT", window.tbRelation, "BOTTOMLEFT", 0, 5)
 	function window.tbAlertToggle.change()
@@ -1470,12 +1470,12 @@ local function buildMainFrame()
 			window.ebTimerLength:SetVisible(true)
 		end
 	end
-	
+
 	--window.dlResource = UIX.CreateDropdownList("dlResource", window)
 	--window.dlResource:SetPoint("TOPLEFT", window.tbUnit, "BOTTOMLEFT", 0, 5)
 	--window.dlResource:SetWidth(200)
 	--window.dlResource:SetItems(kAlert.config.recources)
-	
+
 	kUtils.taskYield("tbResourceToggle")
 	window.tbResourceToggle = kUtils.buildToggleBox("tbResourceToggle",window, 20, 100, {kAlertTexts.tbAlertToggleAbove,kAlertTexts.tbAlertToggleBelow,kAlertTexts.tbAlertToggleRange},2)
 	window.tbResourceToggle:SetPoint("TOPLEFT", window.tbUnit, "BOTTOMLEFT", 0, 5)
@@ -1486,17 +1486,17 @@ local function buildMainFrame()
 
 	window.ebValue = kUtils.buildEditBox("ebValue", window, 20, 200, kAlertTexts.ebValue .. ":")
 	window.ebValue:SetPoint("TOPLEFT", window.tbResourceToggle, "BOTTOMLEFT", 0, 5)
-	
+
 	window.ckCombatOnly = kUtils.buildCheckBox("ckCombatOnly",window, 20, 200, kAlertTexts.ckCombatOnly)
 	window.ckCombatOnly:SetPoint("TOPLEFT", window.ebValue, "BOTTOMLEFT", 0, 5)
-	
+
 	-- Display Controls
 	-- Display Image
 	window.ebImage = kUtils.buildImageBox("ebImage", window, 200, 200)
 	window.ebImage:SetPoint("TOPLEFT", window.tbAlertTypes, "TOPRIGHT", 10, 0)
 	window.ebImage:SetLayer(-1)
 	window.ebImage.count = 75
-	
+
 	function window.ebImage.clear()
 		window.ebImage.defSorce = nil
 		window.ebImage.defImage = nil
@@ -1504,7 +1504,7 @@ local function buildMainFrame()
 		window.ckDefaultImage:SetChecked(false)
 		window.ebImage.setImageIndex(1)
 	end
-	
+
 	function window.ebImage.setDefault(image)
 		window.ebImage.defSorce = "Rift"
 		window.ebImage.defImage = image
@@ -1514,21 +1514,21 @@ local function buildMainFrame()
 		end
 		window.ckDefaultImage:SetVisible(true)
 	end
-	
+
 	function window.ebImage.setImageIndex(index)
 		window.ebImage.index = index
 		window.ebImage.setImage("kAlert", string.format("images\\Aura-%d.dds", window.ebImage.index))
 		window.btImageBack:SetVisible(index > 1)
 		window.btImageNext:SetVisible(index < window.ebImage.count)
 	end
-	
+
 	function window.ebImage.setImageCustom(source, image)
 		window.ebImage.index = 0
 		window.ebImage.setImage(source, image)
 		window.btImageBack:SetVisible(false)
 		window.btImageNext:SetVisible(false)
 	end
-	
+
 	window.ckDefaultImage = kUtils.buildCheckBox("ckDefaultImage",window, 20, 195, kAlertTexts.ckUseDefaultImage)
 	window.ckDefaultImage:SetPoint("TOPLEFT", window.ebImage, "TOPLEFT", 5, 2)
 	window.ckDefaultImage.label:SetBackgroundColor(0, 0, 0, 0.5)
@@ -1541,7 +1541,7 @@ local function buildMainFrame()
 			window.ebImage.setImageIndex(1)
 		end
 	end
-	
+
 	kUtils.taskYield("btImageBack")
 	window.btImageBack = kUtils.buildLabel("btImageBack",window,35,30,"<")
 	window.btImageBack:SetBackgroundColor(0, 0, 0, 0.5)
@@ -1557,21 +1557,21 @@ local function buildMainFrame()
 	window.btImageNext = kUtils.buildLabel("btImageNext",window,35,30,">")
 	window.btImageNext:SetBackgroundColor(0, 0, 0, 0.5)
 	window.btImageNext:SetPoint("RIGHTCENTER", window.ebImage, "RIGHTCENTER",-1,0)
-	
+
 	window.btImageNext:EventAttach(Event.UI.Input.Mouse.Left.Click,
 		function()
 			if window.ebImage.index < window.ebImage.count then
 				window.ebImage.setImageIndex(window.ebImage.index + 1)
 			end
 		end, "Click")
-	
+
 	window.ebImage.setImageIndex(1)
-	
+
 	kUtils.taskYield("ebCustomImage")
 	window.ebCustomImage = kUtils.buildEditBox("ebCustomImage",window,20,200,kAlertTexts.ebCustomImage .. ":")
 	window.ebCustomImage:SetPoint("TOPLEFT", window.ebImage, "BOTTOMLEFT", 0, 5)
 	function window.ebCustomImage.text.Event:KeyUp()
-		
+
 		if string.len(self:GetText()) > 0 then
 			window.ebImage.setImageCustom("kAlert", "custom\\" .. self:GetText())
 		else
@@ -1584,12 +1584,12 @@ local function buildMainFrame()
 			end
 		end
 
-	end	
-	
+	end
+
 	kUtils.taskYield("ebImageX")
 	window.ebImageX = kUtils.buildEditBoxInteger("ebImageX",window,20,95,kAlertTexts.ebImageX .. ":")
 	window.ebImageX:SetPoint("TOPLEFT", window.ebCustomImage, "BOTTOMLEFT", 0, 5)
-	
+
 	window.ebImageY = kUtils.buildEditBoxInteger("ebImageY",window,20,95,kAlertTexts.ebImageY .. ":")
 	window.ebImageY:SetPoint("TOPLEFT", window.ebImageX, "TOPRIGHT", 10, 0)
 
@@ -1604,11 +1604,11 @@ local function buildMainFrame()
 	kUtils.taskYield("ebText")
 	window.ebText = kUtils.buildEditBox("ebText",window,20,185,kAlertTexts.ebText .. ":")
 	window.ebText:SetPoint("TOPLEFT", window.ebImage, "TOPRIGHT", 10, 0)
-	
+
 	window.btTextVars = UIX.CreateImageButton("btTextVars", window)
 	window.btTextVars:SetTextures("Rift", "btn_expand (normal).dds", "btn_expand (over).dds", "btn_expand (click).dds")
 	window.btTextVars:SetPoint("CENTERLEFT", window.ebText, "CENTERRIGHT", 3, 0)
-	
+
 	local function insertVariable(text)
 		local tf = window.ebText.text
 
@@ -1621,11 +1621,11 @@ local function buildMainFrame()
 			end
 			selEnd = selStart
 		end
-		
+
 		tf:SetText(oldText:sub(1, selStart) .. text .. oldText:sub(selEnd + 1))
 		tf:SetCursor(selStart + text:len())
 	end
-	
+
 	function window.btTextVars.Event:LeftClick()
 		if not window.btTextVars:GetEnabled() then return end
 		kUtils.showContextMenu(
@@ -1638,7 +1638,7 @@ local function buildMainFrame()
 	kUtils.taskYield("ebTextOpacity")
 	window.ebTextOpacity = kUtils.buildEditBoxInteger("ebTextOpacity",window.ebText,20,90,kAlertTexts.ebOpacity .. ":")
 	window.ebTextOpacity:SetPoint("TOPLEFT", window.ebText, "BOTTOMLEFT", 0, 5)
-	
+
 	kUtils.taskYield("ebTextSize")
 	window.ebTextSize = kUtils.buildEditBoxInteger("ebTextSize",window.ebText,20,90,kAlertTexts.ebSize .. ":")
 	window.ebTextSize:SetPoint("TOPLEFT", window.ebTextOpacity, "BOTTOMLEFT", 0, 5)
@@ -1654,7 +1654,7 @@ local function buildMainFrame()
 	kUtils.taskYield("ebTextFont")
 	window.ebTextFont = kUtils.buildEditBox("ebTextFont",window.ebText, 20, 200, kAlertTexts.ebTextFont .. ":")
 	window.ebTextFont:SetPoint("TOPLEFT", window.tbTextInside, "BOTTOMLEFT", 0, 15)
-	
+
 	-- Display Color
 	window.txtColor = kUtils.buildLabel("txtColor", window,15,50,kAlertTexts.lblColor .. ":")
 	window.txtColor:SetPoint("TOPLEFT", window.ebTextFont, "BOTTOMLEFT", 0, 5)
@@ -1673,7 +1673,7 @@ local function buildMainFrame()
 	window.ebRed = kUtils.buildEditBoxInteger("ebRed",window,20,50,kAlertTexts.ebRed .. ":", 28)
 	window.ebRed.text:SetText("100")
 	window.ebRed:SetPoint("TOPLEFT", window.txtColor, "BOTTOMLEFT", 0, 5)
-	
+
 	window.ebRed.text:EventAttach(Event.UI.Textfield.Change,
 		function(self, handle)
 			local val = tonumber(self:GetText())
@@ -1683,10 +1683,10 @@ local function buildMainFrame()
 			end
 			window.frColor.setColor()
 		end, "TextChange")
-	
+
 	window.slRed = kUtils.buildSlider("slRed",window.ebRed,20,140,0,100)
 	window.slRed:SetPoint("CENTERLEFT", window.ebRed, "CENTERRIGHT", 10, 5)
-	
+
 	window.slRed:EventAttach(Event.UI.Slider.Change,
 		function()
 			window.ebRed.text:SetText(tostring(window.slRed:GetPosition()))
@@ -1697,22 +1697,22 @@ local function buildMainFrame()
 	window.ebGreen = kUtils.buildEditBoxInteger("ebGreen",window,20,50,kAlertTexts.ebGreen .. ":", 28)
 	window.ebGreen.text:SetText("100")
 	window.ebGreen:SetPoint("TOPLEFT", window.ebRed, "BOTTOMLEFT", 0, 5)
-	
+
 	window.ebGreen.text:EventAttach(Event.UI.Textfield.Change,
 		function(self, handle)
 			local val = tonumber(self:GetText())
 			if val then
 				val = math.min(100, math.max(0, math.floor(val)))
 				window.slGreen:SetPosition(val)
-			end	
+			end
 			window.frColor.setColor()
 		end, "TextChange")
-	
+
 	window.slGreen = kUtils.buildSlider("slGreen",window.ebGreen,20,140,0,100)
 	window.slGreen:SetPoint("CENTERLEFT", window.ebGreen, "CENTERRIGHT", 10, 5)
-	
+
 	window.slGreen:EventAttach(Event.UI.Slider.Change,
-		function()	
+		function()
 			window.ebGreen.text:SetText(tostring(window.slGreen:GetPosition()))
 			window.frColor.setColor()
 		end, "SliderChange")
@@ -1721,9 +1721,9 @@ local function buildMainFrame()
 	window.ebBlue = kUtils.buildEditBoxInteger("ebBlue",window,20,50,kAlertTexts.ebBlue .. ":", 28)
 	window.ebBlue.text:SetText("100")
 	window.ebBlue:SetPoint("TOPLEFT", window.ebGreen, "BOTTOMLEFT", 0, 5)
-	
+
 	window.ebBlue.text:EventAttach(Event.UI.Textfield.Change,
-		function(self, handle)	
+		function(self, handle)
 			local val = tonumber(self:GetText())
 			if val then
 				val = math.min(100, math.max(0, math.floor(val)))
@@ -1731,23 +1731,23 @@ local function buildMainFrame()
 			end
 			window.frColor.setColor()
 		end, "TextChange")
-	
+
 	window.slBlue = kUtils.buildSlider("slBlue",window.ebBlue,20,140,0,100)
 	window.slBlue:SetPoint("CENTERLEFT", window.ebBlue, "CENTERRIGHT", 10, 5)
-	
+
 	window.slBlue:EventAttach(Event.UI.Slider.Change,
 		function()
 			window.ebBlue.text:SetText(tostring(window.slBlue:GetPosition()))
 			window.frColor.setColor()
 		end, "SliderChange")
-	
+
 	window.frColor.setColor()
-	
+
 	-- Display Timer
 	kUtils.taskYield("ckTimer")
 	window.ckTimer = kUtils.buildCheckBox("ckTimer",window.ebAlertItem, 20, 90, kAlertTexts.ckTimerTimer)
 	window.ckTimer:SetPoint("TOPLEFT", window.ebBlue, "BOTTOMLEFT", 0, 10)
-	
+
 	function window.ckTimer.Event:CheckboxChange()
 		window.ebTimerSize:SetVisible(window.ckTimer:GetChecked())
 	end
@@ -1769,16 +1769,16 @@ local function buildMainFrame()
 	window.ebTimerLength = kUtils.buildEditBoxInteger("ebTimerLength",window.ebTimerSize,20,90,kAlertTexts.ebTimerLength .. ":")
 	window.ebTimerLength:SetPoint("TOPLEFT", window.tbTimerInside, "BOTTOMLEFT", 0, 5)
 	window.ebTimerLength.text:SetText("5")
-	
+
 	-- Display Base
 	kUtils.taskYield("btSave")
 	window.btSave = kUtils.buildButton("btSave",window,35,100,kAlertTexts.btSave)
 	window.btSave:SetPoint("BOTTOMLEFT", window.btEditLayout, "BOTTOMRIGHT", 440, 10)
-	window.btSave:EventAttach(Event.UI.Input.Mouse.Left.Click, function(self, handle) saveAlert(window) end, "save") 
+	window.btSave:EventAttach(Event.UI.Input.Mouse.Left.Click, function(self, handle) saveAlert(window) end, "save")
 
 	window.btClear = kUtils.buildButton("btClear",window,35,100,kAlertTexts.btClear)
 	window.btClear:SetPoint ("TOPLEFT", window.btSave, "TOPRIGHT")
-	
+
 	function window.clearAlert()
 		window.oldAlertName = nil
 		window.setStatus("")
@@ -1824,23 +1824,23 @@ local function buildMainFrame()
 		window.tbRelation.setSelected(0)
 		window.ebAlertName.text:SetKeyFocus(true)
 	end
-	
+
 	window.btClear:EventAttach(Event.UI.Button.Left.Press, window.clearAlert, "Clear")
-	
+
 	-- System Elements
 	window.btClose = kUtils.buildButton("btClose",window,35,100,kAlertTexts.btClose,"close")
 	window.btClose:SetPoint("TOPRIGHT", window, "TOPRIGHT", -9, 16)
-	
+
 	function window.btClose.Event:LeftPress()
 		window.setStatus("")
 		window:SetVisible(false)
 		if kAlert.config.shareFrame then
 			kAlert.config.shareFrame:SetVisible(false)
 		end
-		
+
 		kAlert.changeHandler.changeOccured = true
 		window.clearAlert()
-		
+
 		if window.alertSet.setsTable == kAlertAlerts.sets then
 			if kAlertSet == "auto" then
 				if kAlert.effectiveAlertSet() ~= window.alertSet.active then
@@ -1860,11 +1860,11 @@ local function buildMainFrame()
 
 		kAlert.config.active = false
 	end
-	
+
 
 	window.ckScanBuffs = kUtils.buildCheckBox("ckScanBuffs",window,20,180,kAlertTexts.ckScanBuffs,true)
 	window.ckScanBuffs:SetPoint ("BOTTOMRIGHT", window, "BOTTOMRIGHT", -30, -20)
-	
+
 	function window.ckScanBuffs.Event:CheckboxChange()
 		if window.ckScanBuffs:GetChecked() then
 			kAlert.systemScanner.start()
@@ -1889,13 +1889,13 @@ local function buildMainFrame()
 			return window.frScreenObjects.getSelected()
 		end
 	end
-	
+
 	kUtils.taskYield("buildMainFrame end")
-	
+
 	window:SetVisible(true)
 
 	kAlert.config.mainFrame = window
-	
+
 end
 
 local function buildMessageBox()
@@ -1903,13 +1903,13 @@ local function buildMessageBox()
 	local window = UIX.CreateStretchedTexture("messageBox", context)
 	window:SetTexture("Rift", "window_popup_alpha.png.dds")
 	window:SetEdges(20, 22, 15, 22)
-	
+
 	window.text = UI.CreateFrame("Text", "messageBoxText", window)
 	window.text:SetPoint("TOPCENTER", window, "TOPCENTER", -3, 7)
 	window.text:SetFontSize(17.5)
-	
+
 	window.buttons = {}
-	
+
 	function window:SetMessageBox(text, buttons, position, callback)
 		window.text:SetText(text)
 		UIX.Frame.ClearPoints(window)
@@ -1917,7 +1917,7 @@ local function buildMessageBox()
 		kUtils.makeMovable(window)
 		window:SetWidth(math.max(#buttons * 166 + 35, 50 + window.text:GetWidth()))
 		window:SetHeight(94 + window.text:GetHeight())
-		
+
 		for i, _ in ipairs(buttons) do
 			if window.buttons[i] == nil then
 				local button = UI.CreateFrame("RiftButton", "button" .. tostring(i), window)
@@ -1926,14 +1926,14 @@ local function buildMessageBox()
 				window.buttons[i] = button
 			end
 		end
-		
+
 		for i = 1, #buttons do
 			local button = window.buttons[i]
 			button:SetText(buttons[i])
 			button:SetVisible(true)
-			button:SetPoint("TOPLEFT", window.text, "BOTTOMCENTER", 
-				(-83 * #buttons) + (i - 1) * 166, 20)	
-			
+			button:SetPoint("TOPLEFT", window.text, "BOTTOMCENTER",
+				(-83 * #buttons) + (i - 1) * 166, 20)
+
 			if type(callback) == "table" then
 				button.Event.LeftClick = callback[i]
 			else
@@ -1945,13 +1945,13 @@ local function buildMessageBox()
 				end
 			end
 		end
-		
+
 		for i = #buttons + 1, table.getn(window.buttons) do
 			window.buttons[i]:SetVisible(false)
 		end
-	
+
 	end
-	
+
 	return window
 end
 
@@ -1966,12 +1966,12 @@ function kAlert.config.movers.addObject(id)
 	object:SetBackgroundColor(0, 0, 0, 0.5)
 	object.movable = true
 	object.target = nil
-	
+
 	function object.clearTarget()
 		object.target = nil
 		object:SetVisible(false)
 	end
-	
+
 	function object.setTarget(target)
 		object.movable = true
 		object.target = target
@@ -1980,7 +1980,7 @@ function kAlert.config.movers.addObject(id)
 		object:SetHeight(target:GetHeight())
 		object:SetPoint("TOPLEFT", target, "TOPLEFT")
 	end
-	
+
 	function object.Event:LeftDown()
 		self.MouseDown = self.movable
 		mouseData = Inspect.Mouse()
@@ -1989,7 +1989,7 @@ function kAlert.config.movers.addObject(id)
 		self.StartX = mouseData.x - self.MyStartX
 		self.StartY = mouseData.y - self.MyStartY
 	end
-	
+
 	function object.Event:MouseMove(mouseX, mouseY)
 		if self.MouseDown then
 			self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", math.floor(mouseX - self.StartX), math.floor(mouseY - self.StartY))
@@ -1998,13 +1998,13 @@ function kAlert.config.movers.addObject(id)
 			end
 		end
 	end
-	
+
 	function object.Event:LeftUp()
 		self.MouseDown = false
 	end
-	
+
 	return object
-	
+
 end
 
 function kAlert.config.formatSetExport(set)
@@ -2069,7 +2069,7 @@ function kAlert.config.formatAlertExport(alertData, excludeName)
 		table.insert(exportData, alertData.unitRelation)
 		table.insert(exportData, kUtils.booltostring(alertData.interruptibleCast))
 	end
-	
+
 	if #exportData == 41 then
 		return table.concat(exportData, ";")
 	else
@@ -2101,7 +2101,7 @@ function kAlert.config.formatAlertImport(data, minLength)
 			importData[i] = importData[i]:gsub("%s", "")
 		end
 	end
-	
+
 	local alertData = {}
 	alertData.name = importData[1]
 	alertData.layer = tonumber(importData[2])
@@ -2112,14 +2112,14 @@ function kAlert.config.formatAlertImport(data, minLength)
 	alertData.combatOnly = kUtils.stringtobool(importData[7])
 	alertData.selfCast = kUtils.stringtobool(importData[8])
 	alertData.itemName = importData[9]
-	
+
 	if alertData.type == 3 then
 	    -- Alert type 3 (Resource) uses the itemId to store the type of resource, which is an integer.
 		alertData.itemId = tonumber(importData[10])
 	else
 		alertData.itemId = importData[10]
 	end
-	
+
 	alertData.itemLength = tonumber(importData[11])
 	alertData.itemValue = tonumber(importData[12])
 	alertData.itemValuePercent = kUtils.stringtobool(importData[13])
@@ -2228,10 +2228,10 @@ function kAlert.config.importAlert()
 		buildImportExportFrame()
 	end
 	local window = kAlert.config.importExportFrame
-	
+
 	window.btImport:SetVisible(true)
 	window.btCancel:SetPoint("LEFTCENTER", kAlert.config.importExportFrame.btImport, "RIGHTCENTER")
-	
+
 	function window.btImport.Event:LeftPress()
 		local alertData, importError = kAlert.ImportAlert(window.ebData.text:GetText())
 		if alertData then
@@ -2242,7 +2242,7 @@ function kAlert.config.importAlert()
 			window.txtStatus:SetText(importError)
 		end
 	end
-	
+
 	window.Open(kAlertTexts.btImportAlert, kAlertTexts.txtImportAlert)
 	window.ebData.text:SetKeyFocus(true)
 end
@@ -2254,10 +2254,10 @@ function kAlert.config.importSet()
 		buildImportExportFrame()
 	end
 	local window = kAlert.config.importExportFrame
-	
+
 	window.btImport:SetVisible(true)
 	window.btCancel:SetPoint("LEFTCENTER", window.btImport, "RIGHTCENTER")
-	
+
 	function window.btImport.Event:LeftPress()
 		local _, importError = kAlert.ImportSet(window.ebData.text:GetText(), alertSet)
 		if importError then
@@ -2267,7 +2267,7 @@ function kAlert.config.importSet()
 		alertSet:Save()
 		window.Close()
 	end
-	
+
 	window.Open(kAlertTexts.btImportSet, kAlertTexts.txtImportSet)
 	window.ebData.text:SetKeyFocus(true)
 end
@@ -2296,12 +2296,12 @@ function kAlert.config.exportSet()
 		buildImportExportFrame()
 	end
 	local window = kAlert.config.importExportFrame
-	
+
 	local dataSet = kAlert.ExportSet(kAlert.config.mainFrame.alertSet)
 
 	window.btImport:SetVisible(false)
 	window.btCancel:SetPoint("LEFTCENTER", window.btImport, "RIGHTCENTER", -60, 0)
-	
+
 	window.Open(kAlertTexts.btExportSet, kAlertTexts.txtExportSet, dataSet, "", true)
 end
 
@@ -2309,10 +2309,10 @@ function kAlert.config.moveAlert()
 	if kAlert.config.alertCopyFrame == nil then
 		buildAlertCopyFrame()
 	end
-	
+
 	local alertName = kAlert.config.mainFrame.getActiveAlertName()
 	local alertData = kAlert.config.mainFrame.alertSet.alerts[alertName]
-	
+
 	kAlert.config.alertCopyFrame.open(
 		kAlertTexts.titleMoveAlert,
 		kAlertTexts.lbMoveAlert,
@@ -2320,33 +2320,33 @@ function kAlert.config.moveAlert()
 		kAlert.alertSet.active,
 		nil,
 		kAlertTexts.btMove)
-		
+
 	kAlert.config.alertCopyFrame.callback = function(newAlertName, set, setsTable)
 		if kAlert.config.mainFrame.alertSet == nil then return end
-	
+
 		alertData.name = newAlertName
-		
+
 		local targetSet = getAlertSet(set, setsTable)
 		if targetSet.alerts[alertData.name] ~= nil then
 			return false, kAlertTexts.statAlertAlreadyExists
 		end
-		
+
 		kAlert.config.mainFrame.alertSet:Delete(alertName)
 		kAlert.config.mainFrame.alertSet:Save()
-		
+
 		targetSet:Add(alertData)
 		targetSet:Save()
-		
+
 		kAlert.config.mainFrame.clearAlert()
 		kAlert.config.mainFrame.frScreenObjects.fillList(kAlert.config.mainFrame.alertSet.alerts)
-		
+
 		if kAlert.isAlertSetActive(kAlert.config.mainFrame.alertSet) or kAlert.isAlertSetActive(targetSet) then
 			kAlert.screenObjects:refresh()
 		end
-		
+
 		return true
 	end
-	
+
 	kAlert.config.alertCopyFrame.cancelCallback = Utility.GlobalEmptyFunction
 end
 
@@ -2354,10 +2354,10 @@ function kAlert.config.copyAlert()
 	if kAlert.config.alertCopyFrame == nil then
 		buildAlertCopyFrame()
 	end
-	
+
 	local alertData = kUtils.tableCopy(
 		kAlert.config.mainFrame.alertSet.alerts[kAlert.config.mainFrame.getActiveAlertName()])
-	
+
 	kAlert.config.alertCopyFrame.open(
 		kAlertTexts.titleCopyAlert,
 		kAlertTexts.lbCopyAlert,
@@ -2365,27 +2365,27 @@ function kAlert.config.copyAlert()
 		kAlert.alertSet.active,
 		nil,
 		kAlertTexts.btCopy)
-		
+
 	kAlert.config.alertCopyFrame.callback = function(newAlertName, set, setsTable)
 		alertData.name = newAlertName
-	
+
 		local targetSet = getAlertSet(set, setsTable)
 		if targetSet.alerts[alertData.name] ~= nil then
 			return false, kAlertTexts.statAlertAlreadyExists
 		end
-		
+
 		targetSet:Add(alertData)
 		targetSet:Save()
-			
+
 		if kAlert.isAlertSetActive(targetSet) then
 			kAlert.screenObjects:refresh()
 		end
-		
+
 		return true
 	end
-	
+
 	kAlert.config.alertCopyFrame.cancelCallback = Utility.GlobalEmptyFunction
-	
+
 	kAlert.config.alertCopyFrame:SetVisible(true)
 end
 
@@ -2393,13 +2393,13 @@ function kAlert.config.sharedAlert()
 	if kAlert.config.alertCopyFrame == nil then
 		buildAlertCopyFrame()
 	end
-	
+
 	-- Skip if a dialog is already open
 	if kAlert.config.alertCopyFrame:GetVisible() then return end
-	
+
 	local alertData = kAlert.sharedAlerts[1][1]
 	local from = kAlert.sharedAlerts[1][2]
-	
+
 	kAlert.config.alertCopyFrame.open(
 		kAlertTexts.titleSharedAlert,
 		string.format(kAlertTexts.lbSharedAlert, from),
@@ -2407,7 +2407,7 @@ function kAlert.config.sharedAlert()
 		kAlert.alertSet.active,
 		nil,
 		kAlertTexts.btAdd)
-		
+
 	kAlert.config.alertCopyFrame.callback = function(newAlertName, set, setsTable)
 		alertData.name = newAlertName
 
@@ -2415,23 +2415,23 @@ function kAlert.config.sharedAlert()
 		if targetSet.alerts[alertData.name] ~= nil then
 			return false, kAlertTexts.statAlertAlreadyExists
 		end
-		
+
 		targetSet:Add(alertData)
 		targetSet:Save()
-		
+
 		if kAlert.config.active then
 			kAlert.config.mainFrame.clearAlert()
 			kAlert.config.mainFrame.frScreenObjects.fillList(kAlert.alertSet.alerts)
 		end
-		
+
 		table.remove(kAlert.sharedAlerts, 1)
 		return true
 	end
-	
+
 	kAlert.config.alertCopyFrame.cancelCallback = function ()
 		table.remove(kAlert.sharedAlerts, 1)
 	end
-	
+
 	kAlert.config.alertCopyFrame:SetVisible(true)
 end
 
@@ -2440,7 +2440,7 @@ local function messageBox(text, buttons, position, callback)
 		kAlert.config.messageBoxFrame = buildMessageBox()
 	end
 	local window = kAlert.config.messageBoxFrame
-	
+
 	window:SetMessageBox(text, buttons, position, callback)
 	window:SetVisible(true)
 end

@@ -1,7 +1,7 @@
 local addonInfo, private = ...
 
 if ( private.kAlertTexts == nil ) then
- 
+
 	private.kAlertTexts = {
 		["addonName"] = "Karuul's Alerting System",
 		["msgNewBuff"] = "New buff found: %s",
@@ -167,5 +167,5 @@ if ( private.kAlertTexts == nil ) then
 		["msgSharedAlertCorrupt"] = "%s tried to share an alert with you, but it appears to be corrupt. Ignoring this alert.",
 		["msgInvalidAlertDeleted"] = "Invalid alert found: %s. It has been deleted in order to prevent unexpected errors."
 	}
-	
+
 end
