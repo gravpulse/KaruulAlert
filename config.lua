@@ -826,6 +826,7 @@ local function editAlert(window)
 		end
 		window.ckDisableAlert:SetChecked(not alertData.active)
 		window.ckCombatOnly:SetChecked(alertData.combatOnly)
+        window.additionalCondition.text:SetText(alertData.additionalCondition or "")
 		for id, itemName in pairs(string.split(alertData.itemName, ",")) do
 			if kAlertGlobalItems[itemName] and kAlertGlobalItems[itemName].icon then
 				window.ebImage.setDefault(kAlertGlobalItems[itemName].icon)
@@ -962,6 +963,7 @@ local function saveAlert(window)
 		alertData.interruptibleCast = window.ckInterruptible:GetChecked()
 		alertData.active = not window.ckDisableAlert:GetChecked()
 		alertData.combatOnly = window.ckCombatOnly:GetChecked()
+        alertData.additionalCondition = window.additionalCondition.text:GetText()
 		alertData.image = window.ebImage.image
 		alertData.imageSource = window.ebImage.source
 
@@ -1850,6 +1852,7 @@ local function buildMainFrame()
 		window.frScreenObjects.clearSelected()
 		window.ckDisableAlert:SetChecked(false)
 		window.ckCombatOnly:SetChecked(false)
+        window.additionalCondition.text:SetText("")
 		window.tbRelation.setSelected(0)
 		window.ebAlertName.text:SetKeyFocus(true)
 	end
