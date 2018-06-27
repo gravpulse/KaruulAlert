@@ -963,7 +963,9 @@ local function saveAlert(window)
 		alertData.interruptibleCast = window.ckInterruptible:GetChecked()
 		alertData.active = not window.ckDisableAlert:GetChecked()
 		alertData.combatOnly = window.ckCombatOnly:GetChecked()
-        alertData.additionalCondition = window.additionalCondition.text:GetText()
+        if window.additionalCondition.text:GetText() ~= window.ebAlertName.text:GetText() then
+            alertData.additionalCondition = window.additionalCondition.text:GetText()
+        end
 		alertData.image = window.ebImage.image
 		alertData.imageSource = window.ebImage.source
 
@@ -1508,7 +1510,15 @@ local function buildMainFrame()
     end
 
     function window.additionalCondition.text.Event:KeyUp()
-        dropdownKeyUpHandler(window.additionalCondition, window.alertListDrop, window.alertSet.alerts)
+        local validConditionalAlerts = {}
+        -- Don't show self as dropdown for as an extra condition
+        for id, details in pairs(window.alertSet.alerts) do
+            if id ~= window.ebAlertName.text:GetText() then
+                validConditionalAlerts[id] = details
+            end
+        end
+
+        dropdownKeyUpHandler(window.additionalCondition, window.alertListDrop, validConditionalAlerts)
     end
 
     window.alertListDrop = kUtils.buildListPane("alertListDrop",window, 200,200)
