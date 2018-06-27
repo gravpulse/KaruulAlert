@@ -1379,7 +1379,9 @@ local function buildMainFrame()
 			else
 				dropdown:SetVisible(false)
 			end
-			callback()
+            if callback ~= nil then
+                callback()
+            end
 		end)
     end
 
@@ -1498,6 +1500,24 @@ local function buildMainFrame()
 
     window.additionalCondition = kUtils.buildEditBox("additionalCondition",window, 20, 200, kAlertTexts.additionalCondition .. ":")
     window.additionalCondition:SetPoint("TOPLEFT", window.ckCombatOnly, "BOTTOMLEFT", 0, 5)
+
+    function window.additionalCondition.text.Event:KeyFocusLoss()
+        window.alertListDrop:SetVisible(false)
+    end
+
+    function window.additionalCondition.text.Event:KeyUp()
+        dropdownKeyUpHandler(window.additionalCondition, window.alertListDrop, window.alertSet.alerts)
+    end
+
+    window.alertListDrop = kUtils.buildListPane("alertListDrop",window, 200,200)
+    window.alertListDrop:SetPoint("TOPRIGHT", window.additionalCondition.text, "BOTTOMRIGHT", 0, 0)
+    window.alertListDrop:SetBackgroundColor(0, 0, 0, 1)
+    window.alertListDrop:SetLayer(2)
+    window.alertListDrop:SetVisible(false)
+
+    function window.alertListDrop.click(button)
+        dropdownClickHandler(window.additionalCondition, window.alertListDrop, button)
+    end
 
 	-- Display Controls
 	-- Display Image
