@@ -1352,35 +1352,39 @@ local function buildMainFrame()
 		window.frItemDrop:SetVisible(false)
 	end
 
-	function window.ebAlertItem.text.Event:KeyUp()
-		local itemName = window.ebAlertItem.text:GetText()
+    function dropdownKeyUpHandler(textbox, dropdown, list, callback)
+        local itemName = textbox.text:GetText()
 
 		kUtils.queueTask(function()
 			if itemName ~= nil and string.len(itemName) > 0 then
-				if window.ebAlertItem.label:GetText() == kAlertTexts.buff .. ":" then
+				if textbox.label:GetText() == kAlertTexts.buff .. ":" then
 					local pos = string.find(string.reverse(itemName),",")
 					if pos ~= nil then itemName = string.sub(itemName,2+string.len(itemName)-pos) end
 				end
 				if string.len(itemName) > 0 then
-					window.frItemDrop.clearList()
+					dropdown.clearList()
 					kUtils.taskYield()
 
 					local exactMatch = false
-					for id, _ in kUtils.pairsByKeys(kAlertGlobalItems) do
+					for id, _ in kUtils.pairsByKeys(list) do
 						if string.prefix(id:upper(), itemName:upper()) then
 							if itemName == id then exactMatch = true end
-							window.frItemDrop.addItem(id)
+							dropdown.addItem(id)
 							kUtils.taskYield()
 						end
-						if window.frItemDrop.itemCount == 10 then break end
+						if dropdown.itemCount == 10 then break end
 					end
-					window.frItemDrop:SetVisible(window.frItemDrop.itemCount > 1 or (window.frItemDrop.itemCount == 1 and not exactMatch))
+					dropdown:SetVisible(dropdown.itemCount > 1 or (dropdown.itemCount == 1 and not exactMatch))
 				end
 			else
-				window.frItemDrop:SetVisible(false)
+				dropdown:SetVisible(false)
 			end
-			updateDefaultImage()
+			callback()
 		end)
+    end
+
+	function window.ebAlertItem.text.Event:KeyUp()
+        dropdownKeyUpHandler(window.ebAlertItem, window.frItemDrop, kAlertGlobalItems, updateDefaultImage)
 	end
 
 	function window.ebAlertItem.text.Event:LeftUp()
@@ -1409,27 +1413,28 @@ local function buildMainFrame()
 	window.frItemDrop:SetLayer(2)
 	window.frItemDrop:SetVisible(false)
 
+    function dropdownClickHandler(textbox, dropdown, button)
+        if dropdown.lastSelected == dropdown.getSelected() and dropdown.lastSelectedTime == math.floor(Inspect.Time.Real()) then
+            local itemPre = ""
+            if textbox.label:GetText() == kAlertTexts.buff .. ":" then
+                local itemName = textbox.text:GetText()
+                if itemName ~= nil and string.len(itemName) > 0 then
+                    local pos = string.find(string.reverse(itemName),",")
+                    if pos ~= nil then itemPre = string.sub(itemName,1,string.len(itemName)-pos) .. "," end
+                end
+            end
+            textbox.text:SetText(itemPre .. dropdown.getSelected())
+            textbox.text.Event:KeyUp()
+            textbox.text:SetCursor(string.len(textbox.text:GetText()))
+            dropdown:SetVisible(false)
+        else
+            dropdown.lastSelected = dropdown.getSelected()
+        end
+        dropdown.lastSelectedTime = math.floor(Inspect.Time.Real())
+    end
+
 	function window.frItemDrop.click(button)
-
-		if window.frItemDrop.lastSelected == window.frItemDrop.getSelected() and window.frItemDrop.lastSelectedTime == math.floor(Inspect.Time.Real()) then
-			local itemPre = ""
-			if window.ebAlertItem.label:GetText() == kAlertTexts.buff .. ":" then
-				local itemName = window.ebAlertItem.text:GetText()
-				if itemName ~= nil and string.len(itemName) > 0 then
-					local pos = string.find(string.reverse(itemName),",")
-					if pos ~= nil then itemPre = string.sub(itemName,1,string.len(itemName)-pos) .. "," end
-				end
-			end
-			window.ebAlertItem.text:SetText(itemPre .. window.frItemDrop.getSelected())
-			window.ebAlertItem.text.Event:KeyUp()
-			window.ebAlertItem.text:SetCursor(string.len(window.ebAlertItem.text:GetText()))
-			window.frItemDrop:SetVisible(false)
-		else
-			window.frItemDrop.lastSelected = window.frItemDrop.getSelected()
-		end
-
-		window.frItemDrop.lastSelectedTime = math.floor(Inspect.Time.Real())
-
+        dropdownClickHandler(window.ebAlertItem, window.frItemDrop, button)
 	end
 
 	kUtils.taskYield("tbResourceTypes")
