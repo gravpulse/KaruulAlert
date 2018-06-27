@@ -1491,6 +1491,9 @@ local function buildMainFrame()
 	window.ckCombatOnly = kUtils.buildCheckBox("ckCombatOnly",window, 20, 200, kAlertTexts.ckCombatOnly)
 	window.ckCombatOnly:SetPoint("TOPLEFT", window.ebValue, "BOTTOMLEFT", 0, 5)
 
+    window.additionalCondition = kUtils.buildEditBox("additionalCondition",window, 20, 200, kAlertTexts.additionalCondition .. ":")
+    window.additionalCondition:SetPoint("TOPLEFT", window.ckCombatOnly, "BOTTOMLEFT", 0, 5)
+
 	-- Display Controls
 	-- Display Image
 	window.ebImage = kUtils.buildImageBox("ebImage", window, 200, 200)

@@ -77,6 +77,7 @@ if ( private.kAlertTexts == nil ) then
 		["ebBlue"] = "B",
 		["ebTextFont"] = "Font",
 		["ckCombatOnly"] = "Combat Only",
+		["additionalCondition"] = "Additional Condition",
 		["statLoaded"] = "Loaded",
 		["statAlertNameMissing"] = "Alert failed to add - No Alert Name",
 		["statItemNotFound"] = "Alert failed to add - Item not found",
