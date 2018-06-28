@@ -15,7 +15,8 @@ local kAlert =
 		resourceList = {},
 		buffList = {}
 	},
-	screenObjectLookup = {},
+	additionalConditionLookup = {},
+	activeAdditionalConditions = {},
 	systemScanner =
 	{
 		activeScanning = false,

@@ -978,7 +978,8 @@ function kAlert.screenObjects:refresh()
 	kUtils.queueTask(function()
 		self.objectCount = 0
 		self.clear()
-		kAlert.screenObjectLookup = {}
+		local screenObjectLookup = {}
+		kAlert.additionalConditionLookup = {}
 
 		kAlert.systemScanner.scanAbilities()
 
@@ -989,13 +990,13 @@ function kAlert.screenObjects:refresh()
 
 		for id, details in pairs(kAlert.alertSet.alerts) do
 			self.add(details)
-			kAlert.screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
+			screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
 		end
 		kUtils.taskYield("refresh - addSet")
 
 		for id, details in pairs(kAlert.alertSubSet.alerts) do
 			self.add(details)
-			kAlert.screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
+			screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
 		end
 		kUtils.taskYield("refresh - addSubSet")
 
@@ -1006,6 +1007,17 @@ function kAlert.screenObjects:refresh()
 				self.buffUnits[details.unit] = true
 			elseif details.type == 3 then
 				self.resourceList[details.itemId] = true
+			end
+
+			-- Add to a cached list of additional conditions pointing to alerts that they modify
+			-- For example, alert 1 set as the additional condition for alert 3 and 4 would look like 1 => {3, 4}
+			if (details.additionalCondition ~= nil and details.additionalCondition ~= "") then
+				-- Find the id of the additional condition
+				conditionId = screenObjectLookup[details.additionalCondition]
+				if kAlert.additionalConditionLookup[conditionId] == nil then
+					kAlert.additionalConditionLookup[conditionId] = {}
+				end
+				table.insert(kAlert.additionalConditionLookup[conditionId], id)
 			end
 		end
 
