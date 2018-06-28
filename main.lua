@@ -515,16 +515,14 @@ function kAlert.processAdditionalConditions()
 
 	for _, additional_id in pairs(kAlert.activeAdditionalConditions) do
 		additionalDetail = kAlert.screenObjects.object[additional_id]
-		-- If additional condition is not visible, original condition cannot be visible
-		-- If addition condition is visible, leave original condition alone
-		if additionalDetail ~= nil and additionalDetail:GetVisible() == false then
+		if additionalDetail ~= nil then
 			-- Find in additionalConditionLookup the alerts affected by this additional condition
 			for _, original_id in pairs(kAlert.additionalConditionLookup[additional_id]) do
 				originalDetail = kAlert.screenObjects.object[original_id]
-				if originalDetail ~= nil then
-					-- Set them to visible false too
-					originalDetail:SetVisible(false)
-				end
+				-- Set the additionalVisible cache for the original alert
+				originalDetail.additionalVisible = additionalDetail:GetVisible()
+				-- Update the original alert
+				kAlert.setVisibleWithConditions(originalDetail)
 			end
 		end
 	end
@@ -796,6 +794,8 @@ function kAlert.screenObjects.addObject(id)
 	object.additionalCondition = nil
 	object.timerEnd = 0
 	object.selfCast = false
+	object.originalVisible = false
+	object.additionalVisible = false
 
 	object.image = UI.CreateFrame("Texture", "objectIcon" .. iID, object)
 	object.image:SetPoint("CENTER", object, "CENTER", 0, 2)
@@ -874,6 +874,8 @@ function kAlert.screenObjects.clear()
 		object.dynamicText = nil
 		object.setText("")
 		object.selfCast = false
+		object.originalVisible = false
+		object.additionalVisible = false
 	end
 
 	kAlert.cache.abilities = {}
@@ -1155,7 +1157,8 @@ function kAlert.processCasting()
 						(not details.interruptibleCast or not unitsCasts[unit].uninterruptible)
 				end
 			end
-			details:SetVisible(showObject and not kAlert.config.active)
+			details.originalVisible = showObject and not kAlert.config.active
+			kAlert.setVisibleWithConditions(details)
 			kAlert.checkIfAdditionalCondition(id)
 		end
 	end
@@ -1406,7 +1409,8 @@ function kAlert.processBuffs()
 			end
 
 			details.setTimer(timerValue)
-			details:SetVisible(showObject and not kAlert.config.active)
+			details.originalVisible = showObject and not kAlert.config.active
+			kAlert.setVisibleWithConditions(details)
 			kAlert.checkIfAdditionalCondition(id)
 		end
 	end
@@ -1479,7 +1483,8 @@ function kAlert.processAbilities()
 				end
 			end
 			details.setTimer(timerValue)
-			details:SetVisible(showObject and not kAlert.config.active)
+			details.originalVisible = showObject and not kAlert.config.active
+			kAlert.setVisibleWithConditions(details)
 			kAlert.checkIfAdditionalCondition(id)
 
 			kUtils.taskYield()
@@ -1491,10 +1496,25 @@ end
 
 function kAlert.checkIfAdditionalCondition(id)
 	-- Check if this alert is an additional condition for another alert
+	-- If so, we need to run the additional conditions change handler
 	if kAlert.additionalConditionLookup[id] ~= nil then
 		kAlert.changeHandler.additionalConditionsPresent = true
 		-- print ("This is an additional condition: id " .. id)
 		table.insert(kAlert.activeAdditionalConditions, id)
+	end
+end
+
+function kAlert.setVisibleWithConditions(details)
+	if details.additionalCondition == nil then
+		-- If this has no additional conditions, behave like normal and SetVisible
+		details:SetVisible(details.originalVisible)
+	else
+		-- If this has additional conditions, visibility is only true if BOTH are true
+		if details.originalVisible == true and details.additionalVisible == true then
+			details:SetVisible(true)
+		else
+			details:SetVisible(false)
+		end
 	end
 end
 
@@ -1589,7 +1609,8 @@ function kAlert.processResources()
 					end
 				end
 			end
-			details:SetVisible(showObject and not kAlert.config.active)
+			details.originalVisible = showObject and not kAlert.config.active
+			kAlert.setVisibleWithConditions(details)
 			kAlert.checkIfAdditionalCondition(id)
 		end
 	end
