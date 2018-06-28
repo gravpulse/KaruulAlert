@@ -474,6 +474,10 @@ function kAlert.eventHandler(handle)
 					kAlert.processCasting()
 					kUtils.taskYield("processCasting")
 				end
+				if kAlert.changeHandler.additionalConditionsPresent then
+					kAlert.processAdditionalConditions()
+					kUtils.taskYield("processAdditionalConditions")
+				end
 			end
 		end
 	end, kAlert.debug and kAlert.profiling, "eventHandler")
@@ -483,6 +487,49 @@ function kAlert.eventHandler(handle)
 	end
 
 	kUtils.runTasks()
+end
+
+function kAlert.processAdditionalConditions()
+--[[
+	print("processing additional conditions")
+	for id, details in pairs(kAlert.screenObjects.object) do
+	      print("objects id " .. tostring(id) .. " has detail name of " .. tostring(details.name))
+	end
+
+	for name, id in pairs(kAlert.screenObjectLookup) do
+		print("lookup name is " .. tostring(name) .. " with id " .. tostring(id))
+	end
+]]--
+
+	for id, conditions in pairs(kAlert.additionalConditionLookup) do
+		print("additional condition lookup id: " .. tostring(id))
+		for position, value in pairs(conditions) do
+			print("-- value: " .. value)
+		end
+	end
+
+	for position, id in pairs(kAlert.activeAdditionalConditions) do
+		print("alerts that need extra scrutiny include id " .. tostring(id) .. " at position " .. tostring(position))
+	end
+
+	for _, additional_id in pairs(kAlert.activeAdditionalConditions) do
+		additionalDetail = kAlert.screenObjects.object[additional_id]
+		-- If additional condition is not visible, original condition cannot be visible
+		-- If addition condition is visible, leave original condition alone
+		if additionalDetail ~= nil and additionalDetail:GetVisible() == false then
+			-- Find in additionalConditionLookup the alerts affected by this additional condition
+			for _, original_id in pairs(kAlert.additionalConditionLookup[additional_id]) do
+				originalDetail = kAlert.screenObjects.object[original_id]
+				if originalDetail ~= nil then
+					-- Set them to visible false too
+					originalDetail:SetVisible(false)
+				end
+			end
+		end
+	end
+
+	kAlert.activeAdditionalConditions = {}
+	kAlert.changeHandler.additionalConditionsPresent = false
 end
 
 function kAlert.printActiveSets()
@@ -1430,11 +1477,22 @@ function kAlert.processAbilities()
 			end
 			details.setTimer(timerValue)
 			details:SetVisible(showObject and not kAlert.config.active)
+			kAlert.checkIfAdditionalCondition(id)
+
 			kUtils.taskYield()
 		end
 	end
 
 	kAlert.changeHandler.abilityChanged = false
+end
+
+function kAlert.checkIfAdditionalCondition(id)
+	-- Check if this alert is an additional condition for another alert
+	if kAlert.additionalConditionLookup[id] ~= nil then
+		kAlert.changeHandler.additionalConditionsPresent = true
+		print ("This is an additional condition: id " .. id)
+		table.insert(kAlert.activeAdditionalConditions, id)
+	end
 end
 
 function kAlert.changeHandler.resMaxChanged(handle, units)
