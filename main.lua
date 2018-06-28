@@ -490,29 +490,6 @@ function kAlert.eventHandler(handle)
 end
 
 function kAlert.processAdditionalConditions()
---[[
-	print("processing additional conditions")
-	for id, details in pairs(kAlert.screenObjects.object) do
-	      print("objects id " .. tostring(id) .. " has detail name of " .. tostring(details.name))
-	end
-
-	for name, id in pairs(kAlert.screenObjectLookup) do
-		print("lookup name is " .. tostring(name) .. " with id " .. tostring(id))
-	end
-
-
-	for id, conditions in pairs(kAlert.additionalConditionLookup) do
-		print("additional condition lookup id: " .. tostring(id))
-		for position, value in pairs(conditions) do
-			print("-- value: " .. value)
-		end
-	end
-
-	for position, id in pairs(kAlert.activeAdditionalConditions) do
-		print("alerts that need extra scrutiny include id " .. tostring(id) .. " at position " .. tostring(position))
-	end
-]]--
-
 	for _, additional_id in pairs(kAlert.activeAdditionalConditions) do
 		additionalDetail = kAlert.screenObjects.object[additional_id]
 		if additionalDetail ~= nil then
@@ -1499,7 +1476,6 @@ function kAlert.checkIfAdditionalCondition(id)
 	-- If so, we need to run the additional conditions change handler
 	if kAlert.additionalConditionLookup[id] ~= nil then
 		kAlert.changeHandler.additionalConditionsPresent = true
-		-- print ("This is an additional condition: id " .. id)
 		table.insert(kAlert.activeAdditionalConditions, id)
 	end
 end
