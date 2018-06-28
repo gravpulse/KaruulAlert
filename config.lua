@@ -899,6 +899,10 @@ local function editAlert(window)
 	end
 end
 
+local function validAdditionalCondition(condition_name, window)
+    return condition_name ~= window.ebAlertName.text:GetText() and window.alertSet.alerts[condition_name] ~= nil
+end
+
 local function saveAlert(window)
 	window.setStatus("")
 
@@ -963,7 +967,7 @@ local function saveAlert(window)
 		alertData.interruptibleCast = window.ckInterruptible:GetChecked()
 		alertData.active = not window.ckDisableAlert:GetChecked()
 		alertData.combatOnly = window.ckCombatOnly:GetChecked()
-        if window.additionalCondition.text:GetText() ~= window.ebAlertName.text:GetText() then
+        if validAdditionalCondition(window.additionalCondition.text:GetText(), window) then
             alertData.additionalCondition = window.additionalCondition.text:GetText()
         end
 		alertData.image = window.ebImage.image
