@@ -978,6 +978,7 @@ function kAlert.screenObjects:refresh()
 	kUtils.queueTask(function()
 		self.objectCount = 0
 		self.clear()
+		kAlert.screenObjectLookup = {}
 
 		kAlert.systemScanner.scanAbilities()
 
@@ -988,11 +989,13 @@ function kAlert.screenObjects:refresh()
 
 		for id, details in pairs(kAlert.alertSet.alerts) do
 			self.add(details)
+			kAlert.screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
 		end
 		kUtils.taskYield("refresh - addSet")
 
 		for id, details in pairs(kAlert.alertSubSet.alerts) do
 			self.add(details)
+			kAlert.screenObjectLookup[details.name] = kAlert.screenObjects.objectCount
 		end
 		kUtils.taskYield("refresh - addSubSet")
 

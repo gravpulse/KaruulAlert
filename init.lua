@@ -15,6 +15,7 @@ local kAlert =
 		resourceList = {},
 		buffList = {}
 	},
+	screenObjectLookup = {},
 	systemScanner =
 	{
 		activeScanning = false,
@@ -55,5 +56,3 @@ kAlert.useTargetOfTarget = Inspect.Setting.Detail("combatCastTot").value
 
 kAlert.debug = false
 kAlert.profiling = false
-
-
