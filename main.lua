@@ -745,6 +745,7 @@ function kAlert.screenObjects.addObject(id)
 	object.timer = nil
 	object.timerLength = 0
 	object.combatOnly = nil
+	object.additionalCondition = nil
 	object.timerEnd = 0
 	object.selfCast = false
 
@@ -819,6 +820,7 @@ function kAlert.screenObjects.clear()
 		object.timer = nil
 		object.timerLength = 0
 		object.combatOnly = nil
+		object.additionalCondition = nil
 		object.timerEnd = 0
 		object.setTimer(-1)
 		object.dynamicText = nil
@@ -922,6 +924,7 @@ function kAlert.screenObjects.add(alert)
 	screenObject.itemValue = alert.itemValue
 	screenObject.itemValuePercent = alert.itemValuePercent
 	screenObject.combatOnly = alert.combatOnly
+	screenObject.additionalCondition = alert.additionalCondition
 	screenObject.timerLength = alert.timerLength
 
 	-- Image
