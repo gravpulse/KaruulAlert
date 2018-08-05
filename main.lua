@@ -493,15 +493,13 @@ function kAlert.processAdditionalConditions()
 	for _, additional_id in pairs(kAlert.activeAdditionalConditions) do
 		local additionalDetail = kAlert.screenObjects.object[additional_id]
 		local additionalConditionsForId = kAlert.additionalConditionLookup[additional_id]
-		if additionalDetail ~= nil and additionalConditionsForId ~= nil then
-			-- Find in additionalConditionLookup the alerts affected by this additional condition
-			for _, original_id in pairs(additionalConditionsForId) do
-				originalDetail = kAlert.screenObjects.object[original_id]
-				-- Set the additionalVisible cache for the original alert
-				originalDetail.additionalVisible = additionalDetail:GetVisible()
-				-- Update the original alert
-				kAlert.setVisibleWithConditions(originalDetail)
-			end
+		-- Find in additionalConditionLookup the alerts affected by this additional condition
+		for _, original_id in pairs(additionalConditionsForId) do
+			originalDetail = kAlert.screenObjects.object[original_id]
+			-- Set the additionalVisible cache for the original alert
+			originalDetail.additionalVisible = additionalDetail:GetVisible()
+			-- Update the original alert
+			kAlert.setVisibleWithConditions(originalDetail)
 		end
 	end
 
@@ -1008,6 +1006,7 @@ function kAlert.screenObjects:refresh()
 		self.clear()
 		local screenObjectLookup = {}
 		kAlert.additionalConditionLookup = {}
+		kAlert.activeAdditionalConditions = {}
 
 		kAlert.systemScanner.scanAbilities()
 
