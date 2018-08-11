@@ -1040,11 +1040,13 @@ function kAlert.screenObjects:refresh()
 			-- For example, alert 1 set as the additional condition for alert 3 and 4 would look like 1 => {3, 4}
 			if (details.additionalCondition ~= nil and details.additionalCondition ~= "") then
 				-- Find the id of the additional condition
-				conditionId = screenObjectLookup[details.additionalCondition]
-				if kAlert.additionalConditionLookup[conditionId] == nil then
-					kAlert.additionalConditionLookup[conditionId] = {}
+				local conditionId = screenObjectLookup[details.additionalCondition]
+				if conditionId ~= nil then -- occurs in the rare case we have a bad reference for a detail additionalCondition
+					if kAlert.additionalConditionLookup[conditionId] == nil then
+						kAlert.additionalConditionLookup[conditionId] = {}
+					end
+					table.insert(kAlert.additionalConditionLookup[conditionId], id)
 				end
-				table.insert(kAlert.additionalConditionLookup[conditionId], id)
 			end
 		end
 
